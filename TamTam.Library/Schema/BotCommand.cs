@@ -18,7 +18,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Optional command description.
         /// </summary>
-        [JsonProperty(PropertyName = "description", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "description", NullValueHandling = NullValueHandling.Ignore)]
         [StringLength(128, MinimumLength = 1)]
         public string Description { get; set; }
     }

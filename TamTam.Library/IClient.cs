@@ -9,5 +9,7 @@ namespace TamTam.Bot
     public interface IClient
     {
         Task<BotInfo> GetCurrentBotInfoAsync();
+
+        Task<BotInfo> EditCurrentBotInfoAsync(BotPatch botPatch);
     }
 }

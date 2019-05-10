@@ -18,6 +18,33 @@ namespace TamTam.Bot
             _accessToken = accessToken;
         }
 
+        /// <summary>
+        /// Edit current bot info.
+        /// </summary>
+        public async Task<BotInfo> EditCurrentBotInfoAsync(BotPatch botPatch)
+        {
+            BotInfo result = null;
+            var method = new HttpMethod("PATCH");
+            var request = new HttpRequestMessage(method, $"https://botapi.tamtam.chat/me?access_token={_accessToken}")
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(botPatch), Encoding.UTF8, "application/json")
+            };
+            using (var client = new HttpClient())
+            using (var response = await client.SendAsync(request))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<BotInfo>(body);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get current bot info.
+        /// </summary>
         public async Task<BotInfo> GetCurrentBotInfoAsync()
         {
             BotInfo result = null;

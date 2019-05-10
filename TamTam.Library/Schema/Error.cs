@@ -13,7 +13,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Error.
         /// </summary>
-        [JsonProperty(PropertyName = "error", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "error", NullValueHandling = NullValueHandling.Ignore)]
         public string ErrorInfo { get; set; }
 
         /// <summary>

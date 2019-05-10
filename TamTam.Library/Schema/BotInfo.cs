@@ -24,31 +24,31 @@ namespace TamTam.Bot.Schema
         /// Unique public user name. 
         /// Can be null if user is not accessible or it is not set.
         /// </summary>
-        [JsonProperty(PropertyName = "username")]
+        [JsonProperty(PropertyName = "username", Required = Required.AllowNull)]
         public string UserName { get; set; }
 
         /// <summary>
         /// URL of avatar.
         /// </summary>
-        [JsonProperty(PropertyName = "avatar_url", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "avatar_url", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public string AvatarUrl { get; set; }
 
         /// <summary>
         /// URL of avatar of a bigger size.
         /// </summary>
-        [JsonProperty(PropertyName = "full_avatar_url", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "full_avatar_url", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public string FullAvatarUrl { get; set; }
 
         /// <summary>
         /// Commands supported by bot.
         /// </summary>
-        [JsonProperty(PropertyName = "commands", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "commands", NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyCollection<BotCommand> Commands { get; set; }
 
         /// <summary>
         /// Bot description.
         /// </summary>
-        [JsonProperty(PropertyName = "description", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "description", NullValueHandling = NullValueHandling.Ignore)]
         [MaxLength(16000)]
         public string Description { get; set; }
     }
