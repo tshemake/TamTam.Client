@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TamTam.Client", "TamTam.Client\TamTam.Client.shproj", "{3FED2ECD-A37C-4273-B0E7-BA21CE8F6A2B}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		TamTam.Client\TamTam.Client.projitems*{3fed2ecd-a37c-4273-b0e7-ba21ce8f6a2b}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DA33211D-234A-45CB-90CF-A7B3C7411AC4}
+	EndGlobalSection
+EndGlobal
