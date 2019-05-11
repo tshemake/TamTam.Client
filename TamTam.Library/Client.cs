@@ -347,6 +347,25 @@ namespace TamTam.Bot
             return result;
         }
 
+        /// <summary>
+        /// Delete message.
+        /// </summary>
+        public async Task<SimpleQueryResult> DeleteMessageAsync(string messageId)
+        {
+            SimpleQueryResult result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/messages?access_token={_accessToken}&message_id={messageId}"))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         private static void ThrowIfOutOfInclusiveRange(long value, string name, long minValue, long maxValue)

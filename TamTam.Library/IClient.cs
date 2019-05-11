@@ -46,6 +46,8 @@ namespace TamTam.Bot
 
         Task<SimpleQueryResult> EditMessageAsync(string messageId, NewMessageBody message);
 
+        Task<SimpleQueryResult> DeleteMessageAsync(string messageId);
+
         #endregion
     }
 }
