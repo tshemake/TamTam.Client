@@ -130,6 +130,26 @@ namespace TamTam.Bot
             return result;
         }
 
+        /// <summary>
+        /// Send action.
+        /// </summary>
+        public async Task<SimpleQueryResult> SendActionAsync(int chatId, ActionRequestBody action)
+        {
+            SimpleQueryResult result = null;
+            var content = new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
+            using (var client = new HttpClient())
+            using (var response = await client.PostAsync($"https://botapi.tamtam.chat/chats/{chatId}/actions?access_token={_accessToken}", content))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         private static void ThrowIfOutOfInclusiveRange(int value, string name, int minValue, int maxValue)
