@@ -21,5 +21,7 @@ namespace TamTam.Bot
         Task<SimpleQueryResult> SendActionAsync(int chatId, ActionRequestBody action);
 
         Task<ChatMember> GetChatMembershipAsync(int chatId);
+
+        Task<ChatMember> LeaveChatAsync(int chatId);
     }
 }
