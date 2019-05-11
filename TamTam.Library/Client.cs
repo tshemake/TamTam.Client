@@ -388,6 +388,30 @@ namespace TamTam.Bot
 
         #endregion
 
+        #region subscriptions
+
+        /// <summary>
+        /// Get subscriptions.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<GetSubscriptionsResult> GetSubscriptionsAsync()
+        {
+            GetSubscriptionsResult result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}"))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<GetSubscriptionsResult>(body);
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
         private static void ThrowIfOutOfInclusiveRange(long value, string name, long minValue, long maxValue)
         {
             if (value < minValue && value > maxValue)

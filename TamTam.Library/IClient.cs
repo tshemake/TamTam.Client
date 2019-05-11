@@ -51,5 +51,11 @@ namespace TamTam.Bot
         Task<SimpleQueryResult> AnswerOnCallbackAsync(string callbackId, CallbackAnswer answer);
 
         #endregion
+
+        #region subscriptions
+
+        Task<GetSubscriptionsResult> GetSubscriptionsAsync();
+
+        #endregion
     }
 }
