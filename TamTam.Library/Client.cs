@@ -260,6 +260,9 @@ namespace TamTam.Bot
 
         #region messages
 
+        /// <summary>
+        /// Get messages.
+        /// </summary>
         public async Task<MessageList> GetMessagesAsync(int? chatId = null, IEnumerable<long> messageIds = null, long? from = null, long? to = null, long limit = 50)
         {
             var requireUrl = $"https://botapi.tamtam.chat/messages?access_token={_accessToken}";
@@ -289,6 +292,35 @@ namespace TamTam.Bot
                 {
                     var body = await response.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<MessageList>(body);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Send message.
+        /// </summary>
+        public async Task<SendMessageResult> SendMessageAsync(NewMessageBody message, int? userId = null, int? chatId = null)
+        {
+            var requireUrl = $"https://botapi.tamtam.chat/messages?access_token={_accessToken}";
+            if (userId.HasValue)
+            {
+                requireUrl += $"&user_id={userId.Value}";
+            }
+            if (chatId.HasValue)
+            {
+                requireUrl += $"&chat_id={chatId.Value}";
+            }
+            SendMessageResult result = null;
+            var content = new StringContent(JsonConvert.SerializeObject(message), Encoding.UTF8, "application/json");
+            using (var client = new HttpClient())
+            using (var response = await client.PostAsync(requireUrl, content))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<SendMessageResult>(body);
                 }
             }
 

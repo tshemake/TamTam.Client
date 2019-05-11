@@ -42,6 +42,8 @@ namespace TamTam.Bot
 
         Task<MessageList> GetMessagesAsync(int? chatId = null, IEnumerable<long> messageIds = null, long? from = null, long? to = null, long limit = 50);
 
+        Task<SendMessageResult> SendMessageAsync(NewMessageBody message, int? userId = null, int? chatId = null);
+
         #endregion
     }
 }
