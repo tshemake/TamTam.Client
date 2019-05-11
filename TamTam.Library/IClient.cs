@@ -20,29 +20,31 @@ namespace TamTam.Bot
 
         Task<ChatList> GetAllChatsAsync(int limit = 50, long offset = 0);
 
-        Task<Chat> GetChatAsync(int chatId);
+        Task<Chat> GetChatAsync(long chatId);
 
-        Task<Chat> EditChatInfoAsync(int chatId, ChatPatch chatPatch);
+        Task<Chat> EditChatInfoAsync(long chatId, ChatPatch chatPatch);
 
-        Task<SimpleQueryResult> SendActionAsync(int chatId, ActionRequestBody action);
+        Task<SimpleQueryResult> SendActionAsync(long chatId, ActionRequestBody action);
 
-        Task<ChatMember> GetChatMembershipAsync(int chatId);
+        Task<ChatMember> GetChatMembershipAsync(long chatId);
 
-        Task<SimpleQueryResult> LeaveChatAsync(int chatId);
+        Task<SimpleQueryResult> LeaveChatAsync(long chatId);
 
-        Task<ChatMembersList> GetMembersAsync(int chatId, IEnumerable<long> userIds = null, int limit = 20, long offset = 0);
+        Task<ChatMembersList> GetMembersAsync(long chatId, IEnumerable<long> userIds = null, int limit = 20, long offset = 0);
 
-        Task<SimpleQueryResult> AddMembersAsync(int chatId, UserIdsList userIds);
+        Task<SimpleQueryResult> AddMembersAsync(long chatId, UserIdsList userIds);
 
-        Task<SimpleQueryResult> RemoveMemberAsync(int chatId, long userId);
+        Task<SimpleQueryResult> RemoveMemberAsync(long chatId, long userId);
 
         #endregion
 
         #region messages
 
-        Task<MessageList> GetMessagesAsync(int? chatId = null, IEnumerable<long> messageIds = null, long? from = null, long? to = null, long limit = 50);
+        Task<MessageList> GetMessagesAsync(long? chatId = null, IEnumerable<long> messageIds = null, long? from = null, long? to = null, long limit = 50);
 
-        Task<SendMessageResult> SendMessageAsync(NewMessageBody message, int? userId = null, int? chatId = null);
+        Task<SendMessageResult> SendMessageAsync(NewMessageBody message, long? userId = null, long? chatId = null);
+
+        Task<SimpleQueryResult> EditMessageAsync(string messageId, NewMessageBody message);
 
         #endregion
     }

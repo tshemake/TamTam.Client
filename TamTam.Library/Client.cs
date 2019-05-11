@@ -90,7 +90,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Get chat.
         /// </summary>
-        public async Task<Chat> GetChatAsync(int chatId)
+        public async Task<Chat> GetChatAsync(long chatId)
         {
             Chat result = null;
             using (var client = new HttpClient())
@@ -109,7 +109,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Edit chat info.
         /// </summary>
-        public async Task<Chat> EditChatInfoAsync(int chatId, ChatPatch chatPatch)
+        public async Task<Chat> EditChatInfoAsync(long chatId, ChatPatch chatPatch)
         {
             Chat result = null;
             var method = new HttpMethod("PATCH");
@@ -133,7 +133,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Send action.
         /// </summary>
-        public async Task<SimpleQueryResult> SendActionAsync(int chatId, ActionRequestBody action)
+        public async Task<SimpleQueryResult> SendActionAsync(long chatId, ActionRequestBody action)
         {
             SimpleQueryResult result = null;
             var content = new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
@@ -153,7 +153,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Get chat membership.
         /// </summary>
-        public async Task<ChatMember> GetChatMembershipAsync(int chatId)
+        public async Task<ChatMember> GetChatMembershipAsync(long chatId)
         {
             ChatMember result = null;
             using (var client = new HttpClient())
@@ -172,7 +172,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Leave chat.
         /// </summary>
-        public async Task<SimpleQueryResult> LeaveChatAsync(int chatId)
+        public async Task<SimpleQueryResult> LeaveChatAsync(long chatId)
         {
             SimpleQueryResult result = null;
             using (var client = new HttpClient())
@@ -191,7 +191,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Get members.
         /// </summary>
-        public async Task<ChatMembersList> GetMembersAsync(int chatId, IEnumerable<long> userIds = null, int limit = 20, long offset = 0)
+        public async Task<ChatMembersList> GetMembersAsync(long chatId, IEnumerable<long> userIds = null, int limit = 20, long offset = 0)
         {
             var requireUrl = $"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}";
             if (userIds != null)
@@ -220,7 +220,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Add members.
         /// </summary>
-        public async Task<SimpleQueryResult> AddMembersAsync(int chatId, UserIdsList userIds)
+        public async Task<SimpleQueryResult> AddMembersAsync(long chatId, UserIdsList userIds)
         {
             SimpleQueryResult result = null;
             var content = new StringContent(JsonConvert.SerializeObject(userIds), Encoding.UTF8, "application/json");
@@ -240,7 +240,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Remove member.
         /// </summary>
-        public async Task<SimpleQueryResult> RemoveMemberAsync(int chatId, long userId)
+        public async Task<SimpleQueryResult> RemoveMemberAsync(long chatId, long userId)
         {
             SimpleQueryResult result = null;
             using (var client = new HttpClient())
@@ -263,7 +263,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Get messages.
         /// </summary>
-        public async Task<MessageList> GetMessagesAsync(int? chatId = null, IEnumerable<long> messageIds = null, long? from = null, long? to = null, long limit = 50)
+        public async Task<MessageList> GetMessagesAsync(long? chatId = null, IEnumerable<long> messageIds = null, long? from = null, long? to = null, long limit = 50)
         {
             var requireUrl = $"https://botapi.tamtam.chat/messages?access_token={_accessToken}";
             if (chatId.HasValue)
@@ -301,7 +301,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Send message.
         /// </summary>
-        public async Task<SendMessageResult> SendMessageAsync(NewMessageBody message, int? userId = null, int? chatId = null)
+        public async Task<SendMessageResult> SendMessageAsync(NewMessageBody message, long? userId = null, long? chatId = null)
         {
             var requireUrl = $"https://botapi.tamtam.chat/messages?access_token={_accessToken}";
             if (userId.HasValue)
@@ -321,6 +321,26 @@ namespace TamTam.Bot
                 {
                     var body = await response.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<SendMessageResult>(body);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Edit message.
+        /// </summary>
+        public async Task<SimpleQueryResult> EditMessageAsync(string messageId, NewMessageBody message)
+        {
+            SimpleQueryResult result = null;
+            var content = new StringContent(JsonConvert.SerializeObject(message), Encoding.UTF8, "application/json");
+            using (var client = new HttpClient())
+            using (var response = await client.PutAsync($"https://botapi.tamtam.chat/messages?access_token={_accessToken}&message_id={messageId}", content))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
                 }
             }
 
