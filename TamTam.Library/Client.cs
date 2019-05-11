@@ -150,6 +150,25 @@ namespace TamTam.Bot
             return result;
         }
 
+        /// <summary>
+        /// Get chat membership.
+        /// </summary>
+        public async Task<ChatMember> GetChatMembershipAsync(int chatId)
+        {
+            ChatMember result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/chats/{chatId}/members/me?access_token={_accessToken}"))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<ChatMember>(body);
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         private static void ThrowIfOutOfInclusiveRange(int value, string name, int minValue, int maxValue)

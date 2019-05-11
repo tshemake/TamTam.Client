@@ -19,5 +19,7 @@ namespace TamTam.Bot
         Task<Chat> EditChatInfoAsync(int chatId, ChatPatch chatPatch);
 
         Task<SimpleQueryResult> SendActionAsync(int chatId, ActionRequestBody action);
+
+        Task<ChatMember> GetChatMembershipAsync(int chatId);
     }
 }
