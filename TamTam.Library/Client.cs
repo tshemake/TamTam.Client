@@ -18,6 +18,27 @@ namespace TamTam.Bot
             _accessToken = accessToken;
         }
 
+        #region bots
+
+        /// <summary>
+        /// Get current bot info.
+        /// </summary>
+        public async Task<BotInfo> GetCurrentBotInfoAsync()
+        {
+            BotInfo result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/me?access_token={_accessToken}"))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<BotInfo>(body);
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Edit current bot info.
         /// </summary>
@@ -42,23 +63,6 @@ namespace TamTam.Bot
             return result;
         }
 
-        /// <summary>
-        /// Get current bot info.
-        /// </summary>
-        public async Task<BotInfo> GetCurrentBotInfoAsync()
-        {
-            BotInfo result = null;
-            using (var client = new HttpClient())
-            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/me?access_token={_accessToken}"))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<BotInfo>(body);
-                }
-            }
-
-            return result;
-        }
+        #endregion
     }
 }

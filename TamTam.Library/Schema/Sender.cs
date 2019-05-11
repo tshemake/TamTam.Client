@@ -23,7 +23,7 @@ namespace TamTam.Bot.Schema
         /// Unique public user name.
         /// Can be null if user is not accessible or it is not set.
         /// </summary>
-        [JsonProperty(PropertyName = "username")]
+        [JsonProperty(PropertyName = "username", Required = Required.AllowNull)]
         public string UserName { get; set; }
     }
 }

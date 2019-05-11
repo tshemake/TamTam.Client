@@ -22,7 +22,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Intent of button. Affects clients representation.
         /// </summary>
-        [JsonProperty(PropertyName = "intent")]
+        [JsonProperty(PropertyName = "intent", Required = Required.DisallowNull)]
         public Intent Intent { get; set; } = Intent.Default;
     }
 }

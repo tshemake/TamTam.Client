@@ -20,14 +20,14 @@ namespace TamTam.Bot.Schema
         /// List of update types your bot want to receive.
         /// See <see cref="Update"/> object for a complete list of types.
         /// </summary>
-        [JsonProperty(PropertyName = "update_types", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "update_types", Required = Required.DisallowNull)]
         public IReadOnlyCollection<UpdateType> UpdateTypes { get; set; }
 
         /// <summary>
         /// Version of API.
         /// Affects model representation.
         /// </summary>
-        [JsonProperty(PropertyName = "version", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "version", Required = Required.DisallowNull)]
         public string Version { get; set; }
     }
 }

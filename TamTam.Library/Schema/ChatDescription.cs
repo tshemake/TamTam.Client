@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace TamTam.Bot.Schema
 {
     /// <summary>
-    /// Request to attach keyboard to message.
+    /// Chat description.
     /// </summary>
-    public class LocationAttachmentRequest : LocationAttachment
+    public class ChatDescription
     {
     }
 }
