@@ -68,7 +68,7 @@ namespace TamTam.Bot
         #region chats
 
         /// <summary>
-        /// Get all chats
+        /// Get all chats.
         /// </summary>
         public async Task<ChatList> GetAllChatsAsync(int limit = 50, long offset = 0)
         {
@@ -88,7 +88,7 @@ namespace TamTam.Bot
         }
 
         /// <summary>
-        /// Get chat
+        /// Get chat.
         /// </summary>
         public async Task<Chat> GetChatAsync(int chatId)
         {
@@ -105,6 +105,31 @@ namespace TamTam.Bot
 
             return result;
         }
+
+        /// <summary>
+        /// Edit chat info.
+        /// </summary>
+        public async Task<Chat> EditChatInfoAsync(int chatId, ChatPatch chatPatch)
+        {
+            Chat result = null;
+            var method = new HttpMethod("PATCH");
+            var request = new HttpRequestMessage(method, $"https://botapi.tamtam.chat/chats/{chatId}?access_token={_accessToken}")
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(chatPatch), Encoding.UTF8, "application/json")
+            };
+            using (var client = new HttpClient())
+            using (var response = await client.SendAsync(request))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<Chat>(body);
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         private static void ThrowIfOutOfInclusiveRange(int value, string name, int minValue, int maxValue)

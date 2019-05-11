@@ -15,5 +15,7 @@ namespace TamTam.Bot
         Task<ChatList> GetAllChatsAsync(int limit = 50, long offset = 0);
 
         Task<Chat> GetChatAsync(int chatId);
+
+        Task<Chat> EditChatInfoAsync(int chatId, ChatPatch chatPatch);
     }
 }
