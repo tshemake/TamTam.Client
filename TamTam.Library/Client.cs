@@ -66,6 +66,10 @@ namespace TamTam.Bot
         #endregion
 
         #region chats
+
+        /// <summary>
+        /// Get all chats
+        /// </summary>
         public async Task<ChatList> GetAllChatsAsync(int limit = 50, long offset = 0)
         {
             ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 100);
@@ -77,6 +81,25 @@ namespace TamTam.Bot
                 {
                     var body = await response.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<ChatList>(body);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get chat
+        /// </summary>
+        public async Task<Chat> GetChatAsync(int chatId)
+        {
+            Chat result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/chats/{chatId}?access_token={_accessToken}"))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<Chat>(body);
                 }
             }
 

@@ -51,14 +51,18 @@ namespace TamTam.Bot.Schema
         /// <term>closed</term>  
         /// <description>Bhat was closed.</description>
         /// </item>
+        /// <item>
+        /// <term>suspended</term>  
+        /// <description></description>
+        /// </item>
         /// </list>
         /// </summary>
         [JsonProperty(PropertyName = "status", Required = Required.Always)]
-        public ChatType ChatStatus { get; set; }
+        public ChatStatus ChatStatus { get; set; }
 
         /// <summary>
         /// Visible title of chat.
-        /// Can be null for dialogs.
+        /// Can be null for <see cref="ChatType.Dialog"/> chat type.
         /// </summary>
         [JsonProperty(PropertyName = "title", Required = Required.AllowNull)]
         public string Title { get; set; }
@@ -77,7 +81,7 @@ namespace TamTam.Bot.Schema
 
         /// <summary>
         /// Number of people in chat.
-        /// Always 2 for dialog chat type.
+        /// Always 2 for <see cref="ChatType.Dialog"/> chat type.
         /// </summary>
         [JsonProperty(PropertyName = "participants_count", Required = Required.Always)]
         public int ParticipantsCount { get; set; }
