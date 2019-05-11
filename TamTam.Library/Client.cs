@@ -449,12 +449,15 @@ namespace TamTam.Bot
             return result;
         }
 
+        /// <summary>
+        /// Get updates.
+        /// </summary>
         public async Task<UpdateList> GetUpdatesAsync(long limit = 100, long? offset = null, IEnumerable<UpdateType> types = null, long timeout = 30)
         {
             ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 1000);
             ThrowIfOutOfInclusiveRange(timeout, nameof(timeout), 0, 90);
 
-            var requireUrl = $"https://botapi.tamtam.chat/messages?access_token={_accessToken}";
+            var requireUrl = $"https://botapi.tamtam.chat/updates?access_token={_accessToken}";
             requireUrl += $"&limit={limit}&timeout={timeout}";
             if (offset.HasValue)
             {
@@ -462,7 +465,7 @@ namespace TamTam.Bot
             }
             if (types != null)
             {
-                requireUrl += $"&types=" + string.Join(",", types.Select(t => ToEnumString(t)));
+                requireUrl += $"&types=" + string.Join(",", types.Select(type => ToEnumString(type)));
             }
             UpdateList result = null;
             using (var client = new HttpClient())
@@ -472,6 +475,32 @@ namespace TamTam.Bot
                 {
                     var body = await response.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<UpdateList>(body);
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        #region upload
+
+        /// <summary>
+        /// Get upload URL.
+        /// </summary>
+        public async Task<UploadEndpoint> GetUploadUrlAsync(UploadType type)
+        {
+            var requireUrl = $"https://botapi.tamtam.chat/uploads?access_token={_accessToken}";
+            requireUrl += $"&type=" + ToEnumString(type);
+
+            UploadEndpoint result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.PostAsync(requireUrl, null))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<UploadEndpoint>(body);
                 }
             }
 

@@ -63,5 +63,11 @@ namespace TamTam.Bot
         Task<UpdateList> GetUpdatesAsync(long limit = 100, long? offset = null, IEnumerable<UpdateType> types = null, long timeout = 30);
 
         #endregion
+
+        #region upload
+
+        Task<UploadEndpoint> GetUploadUrlAsync(UploadType type);
+
+        #endregion
     }
 }
