@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using TamTam.Bot.Connector;
 using TamTam.Bot.Schema;
 
 namespace TamTam.Bot
@@ -15,10 +16,12 @@ namespace TamTam.Bot
     public class Client : IClient
     {
         private readonly string _accessToken;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public Client(string accessToken)
         {
             _accessToken = accessToken;
+            _httpClientFactory = new HttpClientFactory();
         }
 
         #region bots
@@ -29,7 +32,7 @@ namespace TamTam.Bot
         public async Task<BotInfo> GetCurrentBotInfoAsync()
         {
             BotInfo result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.GetAsync($"https://botapi.tamtam.chat/me?access_token={_accessToken}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -53,7 +56,7 @@ namespace TamTam.Bot
             {
                 Content = new StringContent(JsonConvert.SerializeObject(botPatch), Encoding.UTF8, "application/json")
             };
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.SendAsync(request))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -77,7 +80,7 @@ namespace TamTam.Bot
         {
             ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 100);
             ChatList result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.GetAsync($"https://botapi.tamtam.chat/chats?access_token={_accessToken}&count={limit}&marker={offset}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -96,7 +99,7 @@ namespace TamTam.Bot
         public async Task<Chat> GetChatAsync(long chatId)
         {
             Chat result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.GetAsync($"https://botapi.tamtam.chat/chats/{chatId}?access_token={_accessToken}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -120,7 +123,7 @@ namespace TamTam.Bot
             {
                 Content = new StringContent(JsonConvert.SerializeObject(chatPatch), Encoding.UTF8, "application/json")
             };
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.SendAsync(request))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -140,7 +143,7 @@ namespace TamTam.Bot
         {
             SimpleQueryResult result = null;
             var content = new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.PostAsync($"https://botapi.tamtam.chat/chats/{chatId}/actions?access_token={_accessToken}", content))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -159,7 +162,7 @@ namespace TamTam.Bot
         public async Task<ChatMember> GetChatMembershipAsync(long chatId)
         {
             ChatMember result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.GetAsync($"https://botapi.tamtam.chat/chats/{chatId}/members/me?access_token={_accessToken}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -178,7 +181,7 @@ namespace TamTam.Bot
         public async Task<SimpleQueryResult> LeaveChatAsync(long chatId)
         {
             SimpleQueryResult result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/chats/{chatId}/members/me?access_token={_accessToken}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -207,7 +210,7 @@ namespace TamTam.Bot
                 requireUrl += $"&count={limit}&marker={offset}";
             }
             ChatMembersList result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.GetAsync(requireUrl))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -227,7 +230,7 @@ namespace TamTam.Bot
         {
             SimpleQueryResult result = null;
             var content = new StringContent(JsonConvert.SerializeObject(userIds), Encoding.UTF8, "application/json");
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.PostAsync($"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}", content))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -246,7 +249,7 @@ namespace TamTam.Bot
         public async Task<SimpleQueryResult> RemoveMemberAsync(long chatId, long userId)
         {
             SimpleQueryResult result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}&user_id={userId}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -288,7 +291,7 @@ namespace TamTam.Bot
             ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 100);
             requireUrl += $"&count={limit}";
             MessageList result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.GetAsync(requireUrl))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -317,7 +320,7 @@ namespace TamTam.Bot
             }
             SendMessageResult result = null;
             var content = new StringContent(JsonConvert.SerializeObject(message), Encoding.UTF8, "application/json");
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.PostAsync(requireUrl, content))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -337,7 +340,7 @@ namespace TamTam.Bot
         {
             SimpleQueryResult result = null;
             var content = new StringContent(JsonConvert.SerializeObject(message), Encoding.UTF8, "application/json");
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.PutAsync($"https://botapi.tamtam.chat/messages?access_token={_accessToken}&message_id={messageId}", content))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -356,7 +359,7 @@ namespace TamTam.Bot
         public async Task<SimpleQueryResult> DeleteMessageAsync(string messageId)
         {
             SimpleQueryResult result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/messages?access_token={_accessToken}&message_id={messageId}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -376,7 +379,7 @@ namespace TamTam.Bot
         {
             SimpleQueryResult result = null;
             var content = new StringContent(JsonConvert.SerializeObject(answer), Encoding.UTF8, "application/json");
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.PostAsync($"https://botapi.tamtam.chat/answers?access_token={_accessToken}&callback_id={callbackId}", content))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -400,7 +403,7 @@ namespace TamTam.Bot
         public async Task<GetSubscriptionsResult> GetSubscriptionsAsync()
         {
             GetSubscriptionsResult result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.GetAsync($"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -417,7 +420,7 @@ namespace TamTam.Bot
         {
             SimpleQueryResult result = null;
             var content = new StringContent(JsonConvert.SerializeObject(subscriptionRequest), Encoding.UTF8, "application/json");
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.PostAsync($"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}", content))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -436,7 +439,7 @@ namespace TamTam.Bot
         public async Task<SimpleQueryResult> UnsubscribeAsync(string url)
         {
             SimpleQueryResult result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}&url={url}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -468,7 +471,7 @@ namespace TamTam.Bot
                 requireUrl += $"&types=" + string.Join(",", types.Select(type => ToEnumString(type)));
             }
             UpdateList result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.GetAsync(requireUrl))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -494,7 +497,7 @@ namespace TamTam.Bot
             requireUrl += $"&type=" + ToEnumString(type);
 
             UploadEndpoint result = null;
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateClient())
             using (var response = await client.PostAsync(requireUrl, null))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
