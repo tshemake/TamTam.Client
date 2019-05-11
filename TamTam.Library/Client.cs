@@ -64,5 +64,35 @@ namespace TamTam.Bot
         }
 
         #endregion
+
+        #region chats
+        public async Task<ChatList> GetAllChatsAsync(int limit = 50, long offset = 0)
+        {
+            ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 100);
+            ChatList result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/chats?access_token={_accessToken}&count={limit}&marker={offset}"))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<ChatList>(body);
+                }
+            }
+
+            return result;
+        }
+        #endregion
+
+        private static void ThrowIfOutOfInclusiveRange(int value, string name, int minValue, int maxValue)
+        {
+            if (value < minValue && value > maxValue)
+            {
+                throw new ArgumentOutOfRangeException(
+                    name,
+                    value,
+                    string.Format("Value must be between {0} and {1}.", minValue, maxValue));
+            }
+        }
     }
 }

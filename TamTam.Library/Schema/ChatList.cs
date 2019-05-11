@@ -16,7 +16,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Reference to the next page of requested chats.
         /// </summary>
-        [JsonProperty(PropertyName = "marker", Required = Required.AllowNull)]
-        public long Marker { get; set; }
+        [JsonProperty(PropertyName = "marker", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+        public long? Marker { get; set; }
     }
 }
