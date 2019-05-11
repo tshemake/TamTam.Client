@@ -58,6 +58,8 @@ namespace TamTam.Bot
 
         Task<SimpleQueryResult> SubscribeAsync(SubscriptionRequestBody subscriptionRequest);
 
+        Task<SimpleQueryResult> UnsubscribeAsync(string url);
+
         #endregion
     }
 }
