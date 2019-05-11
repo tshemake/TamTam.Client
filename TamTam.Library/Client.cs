@@ -366,6 +366,26 @@ namespace TamTam.Bot
             return result;
         }
 
+        /// <summary>
+        /// Answer on callback.
+        /// </summary>
+        public async Task<SimpleQueryResult> AnswerOnCallbackAsync(string callbackId, CallbackAnswer answer)
+        {
+            SimpleQueryResult result = null;
+            var content = new StringContent(JsonConvert.SerializeObject(answer), Encoding.UTF8, "application/json");
+            using (var client = new HttpClient())
+            using (var response = await client.PostAsync($"https://botapi.tamtam.chat/answers?access_token={_accessToken}&callback_id={callbackId}", content))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         private static void ThrowIfOutOfInclusiveRange(long value, string name, long minValue, long maxValue)
