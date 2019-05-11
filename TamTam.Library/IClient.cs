@@ -60,6 +60,8 @@ namespace TamTam.Bot
 
         Task<SimpleQueryResult> UnsubscribeAsync(string url);
 
+        Task<UpdateList> GetUpdatesAsync(long limit = 100, long? offset = null, IEnumerable<UpdateType> types = null, long timeout = 30);
+
         #endregion
     }
 }

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -427,6 +430,9 @@ namespace TamTam.Bot
             return result;
         }
 
+        /// <summary>
+        /// Unsubscribe.
+        /// </summary>
         public async Task<SimpleQueryResult> UnsubscribeAsync(string url)
         {
             SimpleQueryResult result = null;
@@ -437,6 +443,35 @@ namespace TamTam.Bot
                 {
                     var body = await response.Content.ReadAsStringAsync();
                     result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<UpdateList> GetUpdatesAsync(long limit = 100, long? offset = null, IEnumerable<UpdateType> types = null, long timeout = 30)
+        {
+            ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 1000);
+            ThrowIfOutOfInclusiveRange(timeout, nameof(timeout), 0, 90);
+
+            var requireUrl = $"https://botapi.tamtam.chat/messages?access_token={_accessToken}";
+            requireUrl += $"&limit={limit}&timeout={timeout}";
+            if (offset.HasValue)
+            {
+                requireUrl += $"&marker={offset}";
+            }
+            if (types != null)
+            {
+                requireUrl += $"&types=" + string.Join(",", types.Select(t => ToEnumString(t)));
+            }
+            UpdateList result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.GetAsync(requireUrl))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<UpdateList>(body);
                 }
             }
 
@@ -454,6 +489,18 @@ namespace TamTam.Bot
                     value,
                     string.Format("Value must be between {0} and {1}.", minValue, maxValue));
             }
+        }
+
+        private static string ToEnumString<T>(T instance)
+        {
+            if (!(instance is Enum)) throw new ArgumentException(nameof(instance), "Must be enum type");
+            var field = typeof(T).GetField(instance.ToString());
+            if (field != null)
+            {
+                var attr = (EnumMemberAttribute)field.GetCustomAttributes(typeof(EnumMemberAttribute), false).SingleOrDefault();
+                if (attr != default) return attr.Value;
+            }
+            return null;
         }
     }
 }

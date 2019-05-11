@@ -17,5 +17,8 @@ namespace TamTam.Bot.Schema
 
         [EnumMember(Value = "bot_started")]
         BotStarted,
+
+        [EnumMember(Value = "message_callback")]
+        MessageCallback,
     }
 }
