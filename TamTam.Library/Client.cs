@@ -188,6 +188,35 @@ namespace TamTam.Bot
             return result;
         }
 
+        /// <summary>
+        /// Get members.
+        /// </summary>
+        public async Task<ChatMembersList> GetMembersAsync(int chatId, IEnumerable<long> user_ids = null, int limit = 20, long offset = 0)
+        {
+            var requireUrl = $"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}";
+            if (user_ids != null)
+            {
+                requireUrl += "&user_ids=" + string.Join(",", user_ids);
+            }
+            else
+            {
+                ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 100);
+                requireUrl += $"&count={limit}&marker={offset}";
+            }
+            ChatMembersList result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.GetAsync(requireUrl))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<ChatMembersList>(body);
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         private static void ThrowIfOutOfInclusiveRange(int value, string name, int minValue, int maxValue)
