@@ -8,9 +8,15 @@ namespace TamTam.Bot
 {
     public interface IClient
     {
+        #region bots
+
         Task<BotInfo> GetCurrentBotInfoAsync();
 
         Task<BotInfo> EditCurrentBotInfoAsync(BotPatch botPatch);
+
+        #endregion
+
+        #region chats
 
         Task<ChatList> GetAllChatsAsync(int limit = 50, long offset = 0);
 
@@ -24,10 +30,18 @@ namespace TamTam.Bot
 
         Task<SimpleQueryResult> LeaveChatAsync(int chatId);
 
-        Task<ChatMembersList> GetMembersAsync(int chatId, IEnumerable<long> user_ids = null, int limit = 20, long offset = 0);
+        Task<ChatMembersList> GetMembersAsync(int chatId, IEnumerable<long> userIds = null, int limit = 20, long offset = 0);
 
         Task<SimpleQueryResult> AddMembersAsync(int chatId, UserIdsList userIds);
 
         Task<SimpleQueryResult> RemoveMemberAsync(int chatId, long userId);
+
+        #endregion
+
+        #region messages
+
+        Task<MessageList> GetMessagesAsync(int? chatId = null, IEnumerable<long> messageIds = null, long? from = null, long? to = null, long limit = 50);
+
+        #endregion
     }
 }

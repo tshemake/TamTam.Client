@@ -191,12 +191,12 @@ namespace TamTam.Bot
         /// <summary>
         /// Get members.
         /// </summary>
-        public async Task<ChatMembersList> GetMembersAsync(int chatId, IEnumerable<long> user_ids = null, int limit = 20, long offset = 0)
+        public async Task<ChatMembersList> GetMembersAsync(int chatId, IEnumerable<long> userIds = null, int limit = 20, long offset = 0)
         {
             var requireUrl = $"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}";
-            if (user_ids != null)
+            if (userIds != null)
             {
-                requireUrl += "&user_ids=" + string.Join(",", user_ids);
+                requireUrl += "&user_ids=" + string.Join(",", userIds);
             }
             else
             {
@@ -237,6 +237,9 @@ namespace TamTam.Bot
             return result;
         }
 
+        /// <summary>
+        /// Remove member.
+        /// </summary>
         public async Task<SimpleQueryResult> RemoveMemberAsync(int chatId, long userId)
         {
             SimpleQueryResult result = null;
@@ -255,7 +258,46 @@ namespace TamTam.Bot
 
         #endregion
 
-        private static void ThrowIfOutOfInclusiveRange(int value, string name, int minValue, int maxValue)
+        #region messages
+
+        public async Task<MessageList> GetMessagesAsync(int? chatId = null, IEnumerable<long> messageIds = null, long? from = null, long? to = null, long limit = 50)
+        {
+            var requireUrl = $"https://botapi.tamtam.chat/messages?access_token={_accessToken}";
+            if (chatId.HasValue)
+            {
+                requireUrl += $"&chat_id={chatId.Value}";
+            }
+            if (messageIds != null)
+            {
+                requireUrl += "&message_ids=" + string.Join(",", messageIds);
+            }
+            if (from.HasValue)
+            {
+                requireUrl += $"&from={from.Value}";
+            }
+            if (to.HasValue)
+            {
+                requireUrl += $"&to={to.Value}";
+            }
+            ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 100);
+            requireUrl += $"&count={limit}";
+            MessageList result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.GetAsync(requireUrl))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<MessageList>(body);
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        private static void ThrowIfOutOfInclusiveRange(long value, string name, long minValue, long maxValue)
         {
             if (value < minValue && value > maxValue)
             {
