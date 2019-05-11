@@ -217,6 +217,26 @@ namespace TamTam.Bot
             return result;
         }
 
+        /// <summary>
+        /// Add members.
+        /// </summary>
+        public async Task<SimpleQueryResult> AddMembersAsync(int chatId, UserIdsList userIds)
+        {
+            SimpleQueryResult result = null;
+            var content = new StringContent(JsonConvert.SerializeObject(userIds), Encoding.UTF8, "application/json");
+            using (var client = new HttpClient())
+            using (var response = await client.PostAsync($"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}", content))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         private static void ThrowIfOutOfInclusiveRange(int value, string name, int minValue, int maxValue)
