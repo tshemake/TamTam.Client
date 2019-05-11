@@ -176,7 +176,7 @@ namespace TamTam.Bot
         {
             SimpleQueryResult result = null;
             using (var client = new HttpClient())
-            using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}"))
+            using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/chats/{chatId}/members/me?access_token={_accessToken}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -226,6 +226,22 @@ namespace TamTam.Bot
             var content = new StringContent(JsonConvert.SerializeObject(userIds), Encoding.UTF8, "application/json");
             using (var client = new HttpClient())
             using (var response = await client.PostAsync($"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}", content))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<SimpleQueryResult> RemoveMemberAsync(int chatId, long userId)
+        {
+            SimpleQueryResult result = null;
+            using (var client = new HttpClient())
+            using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}&user_id={userId}"))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {

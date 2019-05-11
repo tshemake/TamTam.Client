@@ -27,5 +27,7 @@ namespace TamTam.Bot
         Task<ChatMembersList> GetMembersAsync(int chatId, IEnumerable<long> user_ids = null, int limit = 20, long offset = 0);
 
         Task<SimpleQueryResult> AddMembersAsync(int chatId, UserIdsList userIds);
+
+        Task<SimpleQueryResult> RemoveMemberAsync(int chatId, long userId);
     }
 }
