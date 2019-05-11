@@ -410,6 +410,23 @@ namespace TamTam.Bot
             return result;
         }
 
+        public async Task<SimpleQueryResult> SubscribeAsync(SubscriptionRequestBody subscriptionRequest)
+        {
+            SimpleQueryResult result = null;
+            var content = new StringContent(JsonConvert.SerializeObject(subscriptionRequest), Encoding.UTF8, "application/json");
+            using (var client = new HttpClient())
+            using (var response = await client.PostAsync($"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}", content))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         private static void ThrowIfOutOfInclusiveRange(long value, string name, long minValue, long maxValue)
