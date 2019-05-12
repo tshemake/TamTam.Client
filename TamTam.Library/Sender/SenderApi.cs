@@ -95,24 +95,20 @@ namespace TamTam.Bot.Sender
                     }
                     using (var httpResponse = await connectorClient.HttpClient.SendAsync(req, cancellationToken))
                     {
-                        if (httpResponse.StatusCode == HttpStatusCode.OK)
+                        if (IsJsonContentType(httpResponse))
                         {
-                            if (IsJsonContentType(httpResponse))
+                            if (httpResponse.StatusCode == HttpStatusCode.OK)
                             {
                                 var value = await ReadContentAsJsonAsync<T>(httpResponse);
                                 return new ApiResponse<T>(true, value, new ResultInfo(httpResponse.StatusCode));
                             }
-                            return new ApiResponse<T>(false, default, new ResultInfo(httpResponse.StatusCode, $"Service sent unknown content-type from url {request.Uri}"));
-                        }
-                        else
-                        {
-                            if (IsJsonContentType(httpResponse))
+                            else
                             {
                                 var value = await ReadContentAsJsonAsync<Error>(httpResponse);
                                 return new ApiResponse<T>(false, default, new ResultInfo(httpResponse.StatusCode, value.Code, value.Message));
                             }
-                            return new ApiResponse<T>(false, default, new ResultInfo(httpResponse.StatusCode));
                         }
+                        return new ApiResponse<T>(false, default, new ResultInfo(httpResponse.StatusCode, $"Service sent unknown content-type from url {request.Uri}"));
                     }
                 }
             }
@@ -130,7 +126,7 @@ namespace TamTam.Bot.Sender
 
         private static bool IsJsonContentType(HttpResponseMessage httpResponse)
         {
-            return httpResponse.Content.Headers.ContentType.MediaType == "application/json";
+            return httpResponse.Content.Headers.ContentType.MediaType == ContentTypes.ApplicationJson;
         }
     }
 }
