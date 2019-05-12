@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,6 +79,14 @@ namespace TamTam.Bot
         #region upload
 
         Task<IApiResponse<UploadEndpoint>> GetUploadUrlAsync(UploadType type, CancellationToken cancellationToken = default);
+
+        Task<IApiResponse<PhotoTokenList>> UploadPhotoAsync(string url, string assetName, Stream stream, CancellationToken cancellationToken = default);
+
+        Task<IApiResponse<UploadedInfo>> UploadVideoAsync(string url, string assetName, Stream stream, CancellationToken cancellationToken = default);
+
+        Task<IApiResponse<UploadedInfo>> UploadAudioAsync(string url, string assetName, Stream stream, CancellationToken cancellationToken = default);
+
+        Task<IApiResponse<UploadedFileInfo>> UploadFileAsync(string url, string assetName, Stream stream, CancellationToken cancellationToken = default);
 
         #endregion
     }

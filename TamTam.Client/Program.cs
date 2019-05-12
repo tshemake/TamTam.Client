@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using TamTam.Bot.Schema;
 
 namespace TamTam.Client

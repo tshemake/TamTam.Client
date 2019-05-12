@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
@@ -328,6 +330,34 @@ namespace TamTam.Bot
 
             IApiResponse<UploadEndpoint> result = null;
             result = await SenderApi.PostAsync<UploadEndpoint>(_connectorClient, requireUrl, null, cancellationToken);
+            return result;
+        }
+
+        public async Task<IApiResponse<PhotoTokenList>> UploadPhotoAsync(string requireUrl, string assetName, Stream stream, CancellationToken cancellationToken = default)
+        {
+            IApiResponse<PhotoTokenList> result = null;
+            result = await SenderApi.UploadPhotoAsync(_connectorClient, requireUrl, assetName, stream, cancellationToken);
+            return result;
+        }
+
+        public async Task<IApiResponse<UploadedInfo>> UploadVideoAsync(string requireUrl, string assetName, Stream stream, CancellationToken cancellationToken = default)
+        {
+            IApiResponse<UploadedInfo> result = null;
+            result = await SenderApi.UploadVideoAsync(_connectorClient, requireUrl, assetName, stream, cancellationToken);
+            return result;
+        }
+
+        public async Task<IApiResponse<UploadedInfo>> UploadAudioAsync(string requireUrl, string assetName, Stream stream, CancellationToken cancellationToken = default)
+        {
+            IApiResponse<UploadedInfo> result = null;
+            result = await SenderApi.UploadAudioAsync(_connectorClient, requireUrl, assetName, stream, cancellationToken);
+            return result;
+        }
+
+        public async Task<IApiResponse<UploadedFileInfo>> UploadFileAsync(string requireUrl, string assetName, Stream stream, CancellationToken cancellationToken = default)
+        {
+            IApiResponse<UploadedFileInfo> result = null;
+            result = await SenderApi.UploadFileAsync(_connectorClient, requireUrl, assetName, stream, cancellationToken);
             return result;
         }
 
