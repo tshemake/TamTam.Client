@@ -6,22 +6,48 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TamTam.Bot.Connector;
 using TamTam.Bot.Schema;
+using TamTam.Bot.Sender;
 
 namespace TamTam.Bot
 {
     public class Client : IClient
     {
+        public readonly Version ApiVersion = new Version(0, 1, 6);
+
+#if DEBUG
+        private readonly LogLevel DefaultLogLevel = LogLevel.Debug;
+#else
+        private readonly LogLevel DefaultLogLevel = LogLevel.Information;
+#endif
+
+        private LogLevel _logLevel;
+
+        public ILogger Logger { get; private set; }
+
         private readonly string _accessToken;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IConnectorClient _connectorClient;
 
         public Client(string accessToken)
+            : this(accessToken, new HttpClientFactory())
+        {
+        }
+
+        public Client(string accessToken, HttpClientFactory httpClientFactory)
         {
             _accessToken = accessToken;
-            _httpClientFactory = new HttpClientFactory();
+            _connectorClient = new ConnectorClient(httpClientFactory);
+            _logLevel = DefaultLogLevel;
+        }
+
+        public void SetLogLevel(LogLevel logLevel)
+        {
+            _logLevel = logLevel;
         }
 
         #region bots
@@ -29,43 +55,20 @@ namespace TamTam.Bot
         /// <summary>
         /// Get current bot info.
         /// </summary>
-        public async Task<BotInfo> GetCurrentBotInfoAsync()
+        public async Task<IApiResponse<BotInfo>> GetCurrentBotInfoAsync(CancellationToken cancellationToken = default)
         {
-            BotInfo result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/me?access_token={_accessToken}"))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<BotInfo>(body);
-                }
-            }
-
+            IApiResponse<BotInfo> result = null;
+            result = await SenderApi.GetAsync<BotInfo>(_connectorClient, $"https://botapi.tamtam.chat/me?access_token={_accessToken}", cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Edit current bot info.
         /// </summary>
-        public async Task<BotInfo> EditCurrentBotInfoAsync(BotPatch botPatch)
+        public async Task<IApiResponse<BotInfo>> EditCurrentBotInfoAsync(BotPatch botPatch, CancellationToken cancellationToken = default)
         {
-            BotInfo result = null;
-            var method = new HttpMethod("PATCH");
-            var request = new HttpRequestMessage(method, $"https://botapi.tamtam.chat/me?access_token={_accessToken}")
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(botPatch), Encoding.UTF8, "application/json")
-            };
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.SendAsync(request))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<BotInfo>(body);
-                }
-            }
-
+            IApiResponse<BotInfo> result = null;
+            result = await SenderApi.PatchAsync<BotInfo>(_connectorClient, $"https://botapi.tamtam.chat/me?access_token={_accessToken}", botPatch, cancellationToken);
             return result;
         }
 
@@ -76,128 +79,68 @@ namespace TamTam.Bot
         /// <summary>
         /// Get all chats.
         /// </summary>
-        public async Task<ChatList> GetAllChatsAsync(int limit = 50, long offset = 0)
+        public async Task<IApiResponse<ChatList>> GetAllChatsAsync(int limit = 50, long offset = 0, CancellationToken cancellationToken = default)
         {
             ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 100);
-            ChatList result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/chats?access_token={_accessToken}&count={limit}&marker={offset}"))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<ChatList>(body);
-                }
-            }
-
+            IApiResponse<ChatList> result = null;
+            result = await SenderApi.GetAsync<ChatList>(_connectorClient, $"https://botapi.tamtam.chat/chats?access_token={_accessToken}&count={limit}&marker={offset}", cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Get chat.
         /// </summary>
-        public async Task<Chat> GetChatAsync(long chatId)
+        public async Task<IApiResponse<Chat>> GetChatAsync(long chatId, CancellationToken cancellationToken = default)
         {
-            Chat result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/chats/{chatId}?access_token={_accessToken}"))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<Chat>(body);
-                }
-            }
-
+            IApiResponse<Chat> result = null;
+            result = await SenderApi.GetAsync<Chat>(_connectorClient, $"https://botapi.tamtam.chat/chats/{chatId}?access_token={_accessToken}", cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Edit chat info.
         /// </summary>
-        public async Task<Chat> EditChatInfoAsync(long chatId, ChatPatch chatPatch)
+        public async Task<IApiResponse<Chat>> EditChatInfoAsync(long chatId, ChatPatch chatPatch, CancellationToken cancellationToken = default)
         {
-            Chat result = null;
-            var method = new HttpMethod("PATCH");
-            var request = new HttpRequestMessage(method, $"https://botapi.tamtam.chat/chats/{chatId}?access_token={_accessToken}")
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(chatPatch), Encoding.UTF8, "application/json")
-            };
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.SendAsync(request))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<Chat>(body);
-                }
-            }
-
+            IApiResponse<Chat> result = null;
+            result = await SenderApi.PatchAsync<Chat>(_connectorClient, $"https://botapi.tamtam.chat/chats/{chatId}?access_token={_accessToken}", chatPatch, cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Send action.
         /// </summary>
-        public async Task<SimpleQueryResult> SendActionAsync(long chatId, ActionRequestBody action)
+        public async Task<IApiResponse<SimpleQueryResult>> SendActionAsync(long chatId, ActionRequestBody action, CancellationToken cancellationToken = default)
         {
-            SimpleQueryResult result = null;
-            var content = new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.PostAsync($"https://botapi.tamtam.chat/chats/{chatId}/actions?access_token={_accessToken}", content))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
-                }
-            }
-
+            IApiResponse<SimpleQueryResult> result = null;
+            result = await SenderApi.PostAsync<SimpleQueryResult>(_connectorClient, $"https://botapi.tamtam.chat/chats/{chatId}/actions?access_token={_accessToken}", action, cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Get chat membership.
         /// </summary>
-        public async Task<ChatMember> GetChatMembershipAsync(long chatId)
+        public async Task<IApiResponse<ChatMember>> GetChatMembershipAsync(long chatId, CancellationToken cancellationToken = default)
         {
-            ChatMember result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/chats/{chatId}/members/me?access_token={_accessToken}"))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<ChatMember>(body);
-                }
-            }
-
+            IApiResponse<ChatMember> result = null;
+            result = await SenderApi.GetAsync<ChatMember>(_connectorClient, $"https://botapi.tamtam.chat/chats/{chatId}/members/me?access_token={_accessToken}", cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Leave chat.
         /// </summary>
-        public async Task<SimpleQueryResult> LeaveChatAsync(long chatId)
+        public async Task<IApiResponse<SimpleQueryResult>> LeaveChatAsync(long chatId, CancellationToken cancellationToken = default)
         {
-            SimpleQueryResult result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/chats/{chatId}/members/me?access_token={_accessToken}"))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
-                }
-            }
-
+            IApiResponse<SimpleQueryResult> result = null;
+            result = await SenderApi.DeleteAsync<SimpleQueryResult>(_connectorClient, $"https://botapi.tamtam.chat/chats/{chatId}/members/me?access_token={_accessToken}", cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Get members.
         /// </summary>
-        public async Task<ChatMembersList> GetMembersAsync(long chatId, IEnumerable<long> userIds = null, int limit = 20, long offset = 0)
+        public async Task<IApiResponse<ChatMembersList>> GetMembersAsync(long chatId, IEnumerable<long> userIds = null, int limit = 20, long offset = 0, CancellationToken cancellationToken = default)
         {
             var requireUrl = $"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}";
             if (userIds != null)
@@ -209,56 +152,28 @@ namespace TamTam.Bot
                 ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 100);
                 requireUrl += $"&count={limit}&marker={offset}";
             }
-            ChatMembersList result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.GetAsync(requireUrl))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<ChatMembersList>(body);
-                }
-            }
-
+            IApiResponse<ChatMembersList> result = null;
+            result = await SenderApi.DeleteAsync<ChatMembersList>(_connectorClient, requireUrl, cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Add members.
         /// </summary>
-        public async Task<SimpleQueryResult> AddMembersAsync(long chatId, UserIdsList userIds)
+        public async Task<IApiResponse<SimpleQueryResult>> AddMembersAsync(long chatId, UserIdsList userIds, CancellationToken cancellationToken = default)
         {
-            SimpleQueryResult result = null;
-            var content = new StringContent(JsonConvert.SerializeObject(userIds), Encoding.UTF8, "application/json");
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.PostAsync($"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}", content))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
-                }
-            }
-
+            IApiResponse<SimpleQueryResult> result = null;
+            result = await SenderApi.PostAsync<SimpleQueryResult>(_connectorClient, $"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}", userIds, cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Remove member.
         /// </summary>
-        public async Task<SimpleQueryResult> RemoveMemberAsync(long chatId, long userId)
+        public async Task<IApiResponse<SimpleQueryResult>> RemoveMemberAsync(long chatId, long userId, CancellationToken cancellationToken = default)
         {
-            SimpleQueryResult result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}&user_id={userId}"))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
-                }
-            }
-
+            IApiResponse<SimpleQueryResult> result = null;
+            result = await SenderApi.DeleteAsync<SimpleQueryResult>(_connectorClient, $"https://botapi.tamtam.chat/chats/{chatId}/members?access_token={_accessToken}&user_id={userId}", cancellationToken);
             return result;
         }
 
@@ -269,7 +184,7 @@ namespace TamTam.Bot
         /// <summary>
         /// Get messages.
         /// </summary>
-        public async Task<MessageList> GetMessagesAsync(long? chatId = null, IEnumerable<long> messageIds = null, long? from = null, long? to = null, long limit = 50)
+        public async Task<IApiResponse<MessageList>> GetMessagesAsync(long? chatId = null, IEnumerable<long> messageIds = null, long? from = null, long? to = null, long limit = 50, CancellationToken cancellationToken = default)
         {
             var requireUrl = $"https://botapi.tamtam.chat/messages?access_token={_accessToken}";
             if (chatId.HasValue)
@@ -290,24 +205,15 @@ namespace TamTam.Bot
             }
             ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 100);
             requireUrl += $"&count={limit}";
-            MessageList result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.GetAsync(requireUrl))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<MessageList>(body);
-                }
-            }
-
+            IApiResponse<MessageList> result = null;
+            result = await SenderApi.GetAsync<MessageList>(_connectorClient, requireUrl, cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Send message.
         /// </summary>
-        public async Task<SendMessageResult> SendMessageAsync(NewMessageBody message, long? userId = null, long? chatId = null)
+        public async Task<IApiResponse<SendMessageResult>> SendMessageAsync(NewMessageBody message, long? userId = null, long? chatId = null, CancellationToken cancellationToken = default)
         {
             var requireUrl = $"https://botapi.tamtam.chat/messages?access_token={_accessToken}";
             if (userId.HasValue)
@@ -318,77 +224,38 @@ namespace TamTam.Bot
             {
                 requireUrl += $"&chat_id={chatId.Value}";
             }
-            SendMessageResult result = null;
-            var content = new StringContent(JsonConvert.SerializeObject(message), Encoding.UTF8, "application/json");
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.PostAsync(requireUrl, content))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<SendMessageResult>(body);
-                }
-            }
-
+            IApiResponse<SendMessageResult> result = null;
+            result = await SenderApi.PostAsync<SendMessageResult>(_connectorClient, requireUrl, message, cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Edit message.
         /// </summary>
-        public async Task<SimpleQueryResult> EditMessageAsync(string messageId, NewMessageBody message)
+        public async Task<IApiResponse<SimpleQueryResult>> EditMessageAsync(string messageId, NewMessageBody message, CancellationToken cancellationToken = default)
         {
-            SimpleQueryResult result = null;
-            var content = new StringContent(JsonConvert.SerializeObject(message), Encoding.UTF8, "application/json");
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.PutAsync($"https://botapi.tamtam.chat/messages?access_token={_accessToken}&message_id={messageId}", content))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
-                }
-            }
-
+            IApiResponse<SimpleQueryResult> result = null;
+            result = await SenderApi.PutAsync<SimpleQueryResult>(_connectorClient, $"https://botapi.tamtam.chat/messages?access_token={_accessToken}&message_id={messageId}", message, cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Delete message.
         /// </summary>
-        public async Task<SimpleQueryResult> DeleteMessageAsync(string messageId)
+        public async Task<IApiResponse<SimpleQueryResult>> DeleteMessageAsync(string messageId, CancellationToken cancellationToken = default)
         {
-            SimpleQueryResult result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/messages?access_token={_accessToken}&message_id={messageId}"))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
-                }
-            }
-
+            IApiResponse<SimpleQueryResult> result = null;
+            result = await SenderApi.DeleteAsync<SimpleQueryResult>(_connectorClient, $"https://botapi.tamtam.chat/messages?access_token={_accessToken}&message_id={messageId}", cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Answer on callback.
         /// </summary>
-        public async Task<SimpleQueryResult> AnswerOnCallbackAsync(string callbackId, CallbackAnswer answer)
+        public async Task<IApiResponse<SimpleQueryResult>> AnswerOnCallbackAsync(string callbackId, CallbackAnswer answer, CancellationToken cancellationToken = default)
         {
-            SimpleQueryResult result = null;
-            var content = new StringContent(JsonConvert.SerializeObject(answer), Encoding.UTF8, "application/json");
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.PostAsync($"https://botapi.tamtam.chat/answers?access_token={_accessToken}&callback_id={callbackId}", content))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
-                }
-            }
-
+            IApiResponse<SimpleQueryResult> result = null;
+            result = await SenderApi.PostAsync<SimpleQueryResult>(_connectorClient, $"https://botapi.tamtam.chat/answers?access_token={_accessToken}&callback_id={callbackId}", answer, cancellationToken);
             return result;
         }
 
@@ -400,62 +267,34 @@ namespace TamTam.Bot
         /// Get subscriptions.
         /// </summary>
         /// <returns></returns>
-        public async Task<GetSubscriptionsResult> GetSubscriptionsAsync()
+        public async Task<IApiResponse<GetSubscriptionsResult>> GetSubscriptionsAsync(CancellationToken cancellationToken = default)
         {
-            GetSubscriptionsResult result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.GetAsync($"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}"))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<GetSubscriptionsResult>(body);
-                }
-            }
-
+            IApiResponse<GetSubscriptionsResult> result = null;
+            result = await SenderApi.GetAsync<GetSubscriptionsResult>(_connectorClient, $"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}", cancellationToken);
             return result;
         }
 
-        public async Task<SimpleQueryResult> SubscribeAsync(SubscriptionRequestBody subscriptionRequest)
+        public async Task<IApiResponse<SimpleQueryResult>> SubscribeAsync(SubscriptionRequestBody subscriptionRequest, CancellationToken cancellationToken = default)
         {
-            SimpleQueryResult result = null;
-            var content = new StringContent(JsonConvert.SerializeObject(subscriptionRequest), Encoding.UTF8, "application/json");
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.PostAsync($"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}", content))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
-                }
-            }
-
+            IApiResponse<SimpleQueryResult> result = null;
+            result = await SenderApi.PostAsync<SimpleQueryResult>(_connectorClient, $"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}", subscriptionRequest, cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Unsubscribe.
         /// </summary>
-        public async Task<SimpleQueryResult> UnsubscribeAsync(string url)
+        public async Task<IApiResponse<SimpleQueryResult>> UnsubscribeAsync(string url, CancellationToken cancellationToken = default)
         {
-            SimpleQueryResult result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.DeleteAsync($"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}&url={url}"))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<SimpleQueryResult>(body);
-                }
-            }
-
+            IApiResponse<SimpleQueryResult> result = null;
+            result = await SenderApi.DeleteAsync<SimpleQueryResult>(_connectorClient, $"https://botapi.tamtam.chat/subscriptions?access_token={_accessToken}&url={url}", cancellationToken);
             return result;
         }
 
         /// <summary>
         /// Get updates.
         /// </summary>
-        public async Task<UpdateList> GetUpdatesAsync(long limit = 100, long? offset = null, IEnumerable<UpdateType> types = null, long timeout = 30)
+        public async Task<IApiResponse<UpdateList>> GetUpdatesAsync(long limit = 100, long? offset = null, IEnumerable<UpdateType> types = null, long timeout = 30, CancellationToken cancellationToken = default)
         {
             ThrowIfOutOfInclusiveRange(limit, nameof(limit), 1, 1000);
             ThrowIfOutOfInclusiveRange(timeout, nameof(timeout), 0, 90);
@@ -470,17 +309,8 @@ namespace TamTam.Bot
             {
                 requireUrl += $"&types=" + string.Join(",", types.Select(type => ToEnumString(type)));
             }
-            UpdateList result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.GetAsync(requireUrl))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<UpdateList>(body);
-                }
-            }
-
+            IApiResponse<UpdateList> result = null;
+            result = await SenderApi.GetAsync<UpdateList>(_connectorClient, requireUrl, cancellationToken);
             return result;
         }
 
@@ -491,22 +321,13 @@ namespace TamTam.Bot
         /// <summary>
         /// Get upload URL.
         /// </summary>
-        public async Task<UploadEndpoint> GetUploadUrlAsync(UploadType type)
+        public async Task<IApiResponse<UploadEndpoint>> GetUploadUrlAsync(UploadType type, CancellationToken cancellationToken = default)
         {
             var requireUrl = $"https://botapi.tamtam.chat/uploads?access_token={_accessToken}";
             requireUrl += $"&type=" + ToEnumString(type);
 
-            UploadEndpoint result = null;
-            using (var client = _httpClientFactory.CreateClient())
-            using (var response = await client.PostAsync(requireUrl, null))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<UploadEndpoint>(body);
-                }
-            }
-
+            IApiResponse<UploadEndpoint> result = null;
+            result = await SenderApi.PostAsync<UploadEndpoint>(_connectorClient, requireUrl, null, cancellationToken);
             return result;
         }
 
