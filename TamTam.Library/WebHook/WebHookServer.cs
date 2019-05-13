@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 
 namespace TamTam.Bot.WebHook
 {
@@ -35,14 +35,22 @@ namespace TamTam.Bot.WebHook
             CreateWebhookHost();
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken = default)
+        public async Task RunAsync(CancellationToken cancellationToken = default)
         {
-            await _webHost.RunAsync(cancellationToken);
-        }
-
-        public async Task WaitForShutdownAsync(CancellationToken cancellationToken = default)
-        {
-            await _webHost.WaitForShutdownAsync(cancellationToken);
+            using (_webHost)
+            {
+                await _webHost.RunAsync(cancellationToken);
+                var serverAddresses = _webHost.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses;
+                if (serverAddresses != null)
+                {
+                    foreach (var address in serverAddresses)
+                    {
+                        Logger.LogInformation($"Now listening on: {address}");
+                    }
+                }
+                await _webHost.WaitForShutdownAsync(cancellationToken);
+                Logger.LogInformation("Stopping WebHookServer");
+            }
         }
 
         private void CreateWebhookHost()
@@ -52,6 +60,7 @@ namespace TamTam.Bot.WebHook
             builder.ConfigureLogging(cfg =>
             {
                 cfg.SetMinimumLevel(_logLevel);
+                cfg.AddConsole();
             });
             builder.ConfigureServices(cfg =>
             {
@@ -66,7 +75,7 @@ namespace TamTam.Bot.WebHook
             builder.Configure(cfg =>
                 cfg.UseRouter(r =>
                 {
-                    r.MapGet(_webHookPath, Post);
+                    r.MapPost(_webHookPath, Post);
                 }));
 
             _webHost = builder.Build();
@@ -79,24 +88,38 @@ namespace TamTam.Bot.WebHook
             {
                 var eventId = new EventId(_eventId++);
 
-                byte[] buf = new byte[request.ContentLength.Value];
-                await request.Body.ReadAsync(buf, 0, buf.Length);
-
-                string body = Encoding.UTF8.GetString(buf);
+                string body = await ReadBodyAsStringAsync(request);
                 Logger.LogDebug(eventId, "WebHook [POST]: " + body);
                 if (PostReceived != null)
                 {
-                    ThreadPool.QueueUserWorkItem(state => PostReceived.Invoke(new PostEventArgs()
+                    OnPostsReceived(new PostEventArgs()
                     {
                         Headers = request.Headers,
                         Body = body
-                    }));
+                    });
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(_eventId, ex, ex.Message);
             }
+        }
+
+        private static async Task<string> ReadBodyAsStringAsync(HttpRequest request)
+        {
+            if (!request.ContentLength.HasValue) return null;
+            else
+            {
+                var data = new byte[request.ContentLength.Value];
+                await request.Body.ReadAsync(data, 0, data.Length);
+
+                return Encoding.UTF8.GetString(data);
+            }
+        }
+
+        protected virtual void OnPostsReceived(PostEventArgs postEvent)
+        {
+            ThreadPool.QueueUserWorkItem(state => PostReceived.Invoke(postEvent));
         }
     }
 }

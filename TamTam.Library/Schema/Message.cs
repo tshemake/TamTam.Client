@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using TamTam.Bot.Converters;
 
 namespace TamTam.Bot.Schema
 {
@@ -28,7 +29,8 @@ namespace TamTam.Bot.Schema
         /// Unix-time when message was created.
         /// </summary>
         [JsonProperty(PropertyName = "timestamp", Required = Required.Always)]
-        public long Timestamp { get; set; }
+        [JsonConverter(typeof(UnixEpochWithMilisecondsConventer))]
+        public DateTime Timestamp { get; set; }
 
         /// <summary>
         /// Forwarder or replied message.
