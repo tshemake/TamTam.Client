@@ -147,15 +147,29 @@ namespace TamTam.Bot.Sender
 
         private static async Task<ApiResponse<T>> OnResponse<T>(HttpResponseMessage httpResponse)
         {
-            if (httpResponse.StatusCode == HttpStatusCode.OK)
+            var actualResponseStatusCode = httpResponse.StatusCode;
+            switch (actualResponseStatusCode)
             {
-                var value = await ReadContentAsJsonAsync<T>(httpResponse);
-                return new ApiResponse<T>(true, value, new ResultInfo(httpResponse.StatusCode));
-            }
-            else
-            {
-                var value = await ReadContentAsJsonAsync<Error>(httpResponse);
-                return new ApiResponse<T>(false, default, new ResultInfo(httpResponse.StatusCode, value.Code, value.Message));
+                case HttpStatusCode.OK:
+                    {
+                        var value = await ReadContentAsJsonAsync<T>(httpResponse);
+                        return new ApiResponse<T>(true, value, new ResultInfo(httpResponse.StatusCode));
+                    }
+                case HttpStatusCode.BadRequest:
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.NotFound:
+                case HttpStatusCode.MethodNotAllowed:
+                case HttpStatusCode.TooManyRequests:
+                case HttpStatusCode.ServiceUnavailable:
+                    {
+                        var value = await ReadContentAsJsonAsync<Error>(httpResponse);
+                        return new ApiResponse<T>(false, default, new ResultInfo(httpResponse.StatusCode, value.Code, value.Message));
+                    }
+                default:
+                    {
+                        httpResponse.EnsureSuccessStatusCode();
+                        return null;
+                    }
             }
         }
 
