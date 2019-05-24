@@ -32,79 +32,79 @@ namespace TamTam.Bot.Sender
             ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
         };
 
-        public static async Task<ApiResponse<PhotoTokenList>> UploadPhotoAsync(IConnectorClient connectorClient, string requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default)
+        public static async Task<ApiResponse<PhotoTokenList>> UploadPhotoAsync(IConnectorClient connectorClient, Uri requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default)
         {
             return await UploadAsync<PhotoTokenList>(connectorClient, requestUri, assetName, stream, cancellationToken);
         }
 
-        public static async Task<ApiResponse<UploadedInfo>> UploadVideoAsync(IConnectorClient connectorClient, string requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default)
+        public static async Task<ApiResponse<UploadedInfo>> UploadVideoAsync(IConnectorClient connectorClient, Uri requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default)
         {
             return await UploadAsync<UploadedInfo>(connectorClient, requestUri, assetName, stream, cancellationToken);
         }
 
-        public static async Task<ApiResponse<UploadedInfo>> UploadAudioAsync(IConnectorClient connectorClient, string requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default)
+        public static async Task<ApiResponse<UploadedInfo>> UploadAudioAsync(IConnectorClient connectorClient, Uri requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default)
         {
             return await UploadAsync<UploadedInfo>(connectorClient, requestUri, assetName, stream, cancellationToken);
         }
-        public static async Task<ApiResponse<UploadedFileInfo>> UploadFileAsync(IConnectorClient connectorClient, string requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default)
+        public static async Task<ApiResponse<UploadedFileInfo>> UploadFileAsync(IConnectorClient connectorClient, Uri requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default)
         {
             return await UploadAsync<UploadedFileInfo>(connectorClient, requestUri, assetName, stream, cancellationToken);
         }
 
-        public static async Task<ApiResponse<T>> PostAsync<T>(IConnectorClient connectorClient, string requestUri, object payload, CancellationToken cancellationToken = default)
+        public static async Task<ApiResponse<T>> PostAsync<T>(IConnectorClient connectorClient, Uri requestUri, object payload, CancellationToken cancellationToken = default)
         {
             var request = new Request<T>
             {
                 HttpMethod = HttpMethod.Post,
-                Uri = requestUri,
+                RequestUri = requestUri,
                 Payload = payload,
             };
-            return await SendAsync(connectorClient, request);
+            return await SendAsync(connectorClient, request, cancellationToken);
         }
 
-        public static async Task<ApiResponse<T>> PutAsync<T>(IConnectorClient connectorClient, string requestUri, object payload, CancellationToken cancellationToken = default)
+        public static async Task<ApiResponse<T>> PutAsync<T>(IConnectorClient connectorClient, Uri requestUri, object payload, CancellationToken cancellationToken = default)
         {
             var request = new Request<T>
             {
                 HttpMethod = HttpMethod.Put,
-                Uri = requestUri,
+                RequestUri = requestUri,
                 Payload = payload,
             };
-            return await SendAsync(connectorClient, request);
+            return await SendAsync(connectorClient, request, cancellationToken);
         }
 
-        public static async Task<ApiResponse<T>> PatchAsync<T>(IConnectorClient connectorClient, string requestUri, object payload, CancellationToken cancellationToken = default)
+        public static async Task<ApiResponse<T>> PatchAsync<T>(IConnectorClient connectorClient, Uri requestUri, object payload, CancellationToken cancellationToken = default)
         {
             var request = new Request<T>
             {
                 HttpMethod = HttpMethod.Patch,
-                Uri = requestUri,
+                RequestUri = requestUri,
                 Payload = payload,
             };
-            return await SendAsync(connectorClient, request);
+            return await SendAsync(connectorClient, request, cancellationToken);
         }
 
-        public static async Task<ApiResponse<T>> GetAsync<T>(IConnectorClient connectorClient, string requestUri, CancellationToken cancellationToken = default)
+        public static async Task<ApiResponse<T>> GetAsync<T>(IConnectorClient connectorClient, Uri requestUri, CancellationToken cancellationToken = default)
         {
             var request = new Request<T>
             {
                 HttpMethod = HttpMethod.Get,
-                Uri = requestUri,
+                RequestUri = requestUri,
             };
-            return await SendAsync(connectorClient, request);
+            return await SendAsync(connectorClient, request, cancellationToken);
         }
 
-        public static async Task<ApiResponse<T>> DeleteAsync<T>(IConnectorClient connectorClient, string requestUri, CancellationToken cancellationToken = default)
+        public static async Task<ApiResponse<T>> DeleteAsync<T>(IConnectorClient connectorClient, Uri requestUri, CancellationToken cancellationToken = default)
         {
             var request = new Request<T>
             {
                 HttpMethod = HttpMethod.Delete,
-                Uri = requestUri,
+                RequestUri = requestUri,
             };
-            return await SendAsync(connectorClient, request);
+            return await SendAsync(connectorClient, request, cancellationToken);
         }
 
-        public static async Task<ApiResponse<T>> UploadAsync<T>(IConnectorClient connectorClient, string requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default)
+        public static async Task<ApiResponse<T>> UploadAsync<T>(IConnectorClient connectorClient, Uri requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default)
         {
             using (var content = new MultipartFormDataContent())
             {
@@ -125,7 +125,7 @@ namespace TamTam.Bot.Sender
 
         public static async Task<ApiResponse<T>> SendAsync<T>(IConnectorClient connectorClient, IRequest<T> request, CancellationToken cancellationToken = default)
         {
-            using (var req = new HttpRequestMessage(request.HttpMethod, request.Uri))
+            using (var req = new HttpRequestMessage(request.HttpMethod, request.RequestUri))
             {
                 if (request.Payload != null)
                 {
@@ -152,7 +152,7 @@ namespace TamTam.Bot.Sender
         {
             try
             {
-                return await instance.SendAsync(request, cancellationToken);
+                return await instance.SendAsync(request, cancellationToken).ConfigureAwait(false);
             }
             catch (TaskCanceledException ex)
             {
@@ -164,42 +164,67 @@ namespace TamTam.Bot.Sender
 
         private static async Task<ApiResponse<T>> OnResponse<T>(HttpResponseMessage httpResponse)
         {
-            var actualResponseStatusCode = httpResponse.StatusCode;
-            string responseJson = await httpResponse.Content.ReadAsStringAsync();
-            switch (actualResponseStatusCode)
+            string responseContent = default;
+            HttpStatusCode actualResponseStatusCode = default;
+            try
             {
-                case HttpStatusCode.OK when !string.IsNullOrWhiteSpace(responseJson):
-                    {
-                        var value = MapFromJson<T>(responseJson);
-                        return new ApiResponse<T>(true, value, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode)));
-                    }
-                case HttpStatusCode.BadRequest when !string.IsNullOrWhiteSpace(responseJson):
-                case HttpStatusCode.Unauthorized when !string.IsNullOrWhiteSpace(responseJson):
-                case HttpStatusCode.NotFound when !string.IsNullOrWhiteSpace(responseJson):
-                case HttpStatusCode.MethodNotAllowed when !string.IsNullOrWhiteSpace(responseJson):
-                case HttpStatusCode.TooManyRequests when !string.IsNullOrWhiteSpace(responseJson):
-                case HttpStatusCode.ServiceUnavailable when !string.IsNullOrWhiteSpace(responseJson):
-                    {
-                        var value = MapFromJson<Error>(responseJson);
-                        return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode), value.Code, value.Message));
-                    }
-                default:
-                    {
-                        httpResponse.EnsureSuccessStatusCode();
-                        return new ApiResponse<T>(true, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode)));
-                    }
+                actualResponseStatusCode = httpResponse.StatusCode;
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                switch (actualResponseStatusCode)
+                {
+                    case HttpStatusCode.OK when !string.IsNullOrWhiteSpace(responseContent):
+                        {
+                            var value = DeserializeObject<T>(responseContent);
+                            return new ApiResponse<T>(true, value, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent)));
+                        }
+                    case HttpStatusCode.BadRequest when !string.IsNullOrWhiteSpace(responseContent):
+                    case HttpStatusCode.Unauthorized when !string.IsNullOrWhiteSpace(responseContent):
+                    case HttpStatusCode.NotFound when !string.IsNullOrWhiteSpace(responseContent):
+                    case HttpStatusCode.MethodNotAllowed when !string.IsNullOrWhiteSpace(responseContent):
+                    case HttpStatusCode.TooManyRequests when !string.IsNullOrWhiteSpace(responseContent):
+                    case HttpStatusCode.ServiceUnavailable when !string.IsNullOrWhiteSpace(responseContent):
+                        {
+                            var value = DeserializeObject<Error>(responseContent);
+                            return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent), value.Code, value.Message));
+                        }
+                    default:
+                        {
+                            httpResponse.EnsureSuccessStatusCode();
+                            return new ApiResponse<T>(true, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent)));
+                        }
+                }
+            }
+            catch (JsonException ex)
+            {
+                return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent), ex));
+            }
+            catch (HttpRequestException ex)
+            {
+                return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent), ex));
+            }
+            catch
+            {
+                return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent),
+                    new ApiRequestException($"Operation returned an invalid status code '{(int)httpResponse.StatusCode}'", (int)httpResponse.StatusCode)));
             }
         }
 
         private static async Task<TResult> ReadContentAsJsonAsync<TResult>(HttpResponseMessage message)
         {
-            var content = await message.Content.ReadAsStringAsync();
-            return MapFromJson<TResult>(content);
+            var content = await message.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return DeserializeObject<TResult>(content);
         }
 
-        private static TResult MapFromJson<TResult>(string json)
+        private static TResult DeserializeObject<TResult>(string json)
         {
-            return JsonConvert.DeserializeObject<TResult>(json, DeserializationSettings);
+            try
+            {
+                return JsonConvert.DeserializeObject<TResult>(json, DeserializationSettings);
+            }
+            catch (JsonException ex)
+            {
+                throw new ApiSerializationException("Unable to deserialize the response.", json, ex);
+            }
         }
 
         private static bool IsJsonContentType(HttpResponseMessage httpResponse)

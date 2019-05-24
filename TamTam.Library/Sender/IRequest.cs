@@ -10,6 +10,6 @@ namespace TamTam.Bot.Sender
     {
         HttpMethod HttpMethod  { get;set; }
         object Payload { get; set; }
-        string Uri { get; set; }
+        Uri RequestUri { get; set; }
     }
 }

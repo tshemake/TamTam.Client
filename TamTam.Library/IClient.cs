@@ -80,13 +80,13 @@ namespace TamTam.Bot
 
         Task<IApiResponse<UploadEndpoint>> GetUploadUrlAsync(UploadType type, CancellationToken cancellationToken = default);
 
-        Task<IApiResponse<PhotoTokenList>> UploadPhotoAsync(string url, string assetName, Stream stream, CancellationToken cancellationToken = default);
+        Task<IApiResponse<PhotoTokenList>> UploadPhotoAsync(Uri requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default);
 
-        Task<IApiResponse<UploadedInfo>> UploadVideoAsync(string url, string assetName, Stream stream, CancellationToken cancellationToken = default);
+        Task<IApiResponse<UploadedInfo>> UploadVideoAsync(Uri requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default);
 
-        Task<IApiResponse<UploadedInfo>> UploadAudioAsync(string url, string assetName, Stream stream, CancellationToken cancellationToken = default);
+        Task<IApiResponse<UploadedInfo>> UploadAudioAsync(Uri requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default);
 
-        Task<IApiResponse<UploadedFileInfo>> UploadFileAsync(string url, string assetName, Stream stream, CancellationToken cancellationToken = default);
+        Task<IApiResponse<UploadedFileInfo>> UploadFileAsync(Uri requestUri, string assetName, Stream stream, CancellationToken cancellationToken = default);
 
         #endregion
     }

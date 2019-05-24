@@ -20,14 +20,15 @@ namespace TamTam.Bot.Sender
             Exception = default;
         }
 
-        public ResultInfo(Exception exception)
-        {
-            Exception = exception;
-        }
-
         public ResultInfo(HttpStatus httpStatus)
         {
             HttpStatus = httpStatus;
+        }
+
+        public ResultInfo(HttpStatus httpStatus, Exception exception)
+            : this(httpStatus)
+        {
+            Exception = exception;
         }
 
         public ResultInfo(HttpStatus httpStatus, string code)
