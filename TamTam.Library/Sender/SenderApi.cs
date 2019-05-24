@@ -144,7 +144,7 @@ namespace TamTam.Bot.Sender
                 {
                     return await OnResponse<T>(httpResponse);
                 }
-                return new ApiResponse<T>(false, default, new ResultInfo(httpResponse.StatusCode, $"Service sent unknown content-type from url {request.RequestUri}."));
+                return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode), $"Service sent unknown content-type from url {request.RequestUri}."));
             }
         }
 
@@ -171,7 +171,7 @@ namespace TamTam.Bot.Sender
                 case HttpStatusCode.OK when !string.IsNullOrWhiteSpace(responseJson):
                     {
                         var value = MapFromJson<T>(responseJson);
-                        return new ApiResponse<T>(true, value, new ResultInfo(httpResponse.StatusCode));
+                        return new ApiResponse<T>(true, value, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode)));
                     }
                 case HttpStatusCode.BadRequest when !string.IsNullOrWhiteSpace(responseJson):
                 case HttpStatusCode.Unauthorized when !string.IsNullOrWhiteSpace(responseJson):
@@ -181,12 +181,12 @@ namespace TamTam.Bot.Sender
                 case HttpStatusCode.ServiceUnavailable when !string.IsNullOrWhiteSpace(responseJson):
                     {
                         var value = MapFromJson<Error>(responseJson);
-                        return new ApiResponse<T>(false, default, new ResultInfo(httpResponse.StatusCode, value.Code, value.Message));
+                        return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode), value.Code, value.Message));
                     }
                 default:
                     {
                         httpResponse.EnsureSuccessStatusCode();
-                        return new ApiResponse<T>(true, default, new ResultInfo(httpResponse.StatusCode));
+                        return new ApiResponse<T>(true, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode)));
                     }
             }
         }

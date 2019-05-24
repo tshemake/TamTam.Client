@@ -7,13 +7,17 @@ namespace TamTam.Bot.Sender
 {
     public class ResultInfo
     {
-        public HttpStatusCode HttpStatusCode { get; }
-        public string ErrorCode { get; }
+        public HttpStatus HttpStatus { get; }
+        public string Code { get; }
         public string Message { get; set; }
         public Exception Exception { get; }
 
         public ResultInfo()
         {
+            HttpStatus = default;
+            Code = default;
+            Message = default;
+            Exception = default;
         }
 
         public ResultInfo(Exception exception)
@@ -21,19 +25,19 @@ namespace TamTam.Bot.Sender
             Exception = exception;
         }
 
-        public ResultInfo(HttpStatusCode httpStatusCode)
+        public ResultInfo(HttpStatus httpStatus)
         {
-            HttpStatusCode = httpStatusCode;
+            HttpStatus = httpStatus;
         }
 
-        public ResultInfo(HttpStatusCode httpStatusCode, string errorCode)
-            : this(httpStatusCode)
+        public ResultInfo(HttpStatus httpStatus, string code)
+            : this(httpStatus)
         {
-            ErrorCode = errorCode;
+            Code = code;
         }
 
-        public ResultInfo(HttpStatusCode httpStatusCode, string errorCode, string message)
-            : this(httpStatusCode, errorCode)
+        public ResultInfo(HttpStatus httpStatus, string code, string message)
+            : this(httpStatus, code)
         {
             Message = message;
         }
