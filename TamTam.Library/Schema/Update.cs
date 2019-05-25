@@ -10,8 +10,15 @@ namespace TamTam.Bot.Schema
     /// Update object repsesents different types of events
     /// that happened in chat. See its inheritors.
     /// </summary>
+    [JsonConverter(typeof(UpdateTypeConverter))]
     public class Update
     {
+        [JsonProperty(PropertyName = "chat_id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? ChatId { get; set; }
+
+        [JsonProperty(PropertyName = "user_id", NullValueHandling = NullValueHandling.Ignore)]
+        public long? UserId { get; set; }
+
         [JsonProperty(PropertyName = "update_type", Required = Required.Always)]
         public UpdateType UpdateType { get; set; }
 
@@ -21,5 +28,8 @@ namespace TamTam.Bot.Schema
         [JsonProperty(PropertyName = "timestamp", Required = Required.Always)]
         [JsonConverter(typeof(UnixEpochWithMilisecondsConventer))]
         public DateTime Timestamp { get; set; }
+
+        [JsonProperty(PropertyName = "callback", NullValueHandling = NullValueHandling.Ignore)]
+        public Callback Callback { get; set; }
     }
 }

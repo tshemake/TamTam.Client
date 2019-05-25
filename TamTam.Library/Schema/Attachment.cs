@@ -14,6 +14,6 @@ namespace TamTam.Bot.Schema
         /// Generic schema representing message attachment.
         /// </summary>
         [JsonProperty(PropertyName = "type", Required = Required.Always)]
-        public string Type { get; set; }
+        public AttachmentType Type { get; set; }
     }
 }
