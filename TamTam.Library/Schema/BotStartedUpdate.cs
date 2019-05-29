@@ -9,18 +9,8 @@ namespace TamTam.Bot.Schema
     /// <summary>
     /// Bot gets this type of update as soon as user pressed Start button.
     /// </summary>
-    public class BotStartedUpdate
+    public class BotStartedUpdate : Update
     {
-        [JsonProperty(PropertyName = "update_type", Required = Required.Always)]
-        public string UpdateType { get; set; }
-
-        /// <summary>
-        /// Unix-time when event has occured.
-        /// </summary>
-        [JsonProperty(PropertyName = "timestamp", Required = Required.Always)]
-        [JsonConverter(typeof(UnixEpochWithMilisecondsConventer))]
-        public DateTime Timestamp { get; set; }
-
         /// <summary>
         /// Dialog identifier where event has occurred.
         /// </summary>

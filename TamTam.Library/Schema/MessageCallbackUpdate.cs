@@ -9,18 +9,8 @@ namespace TamTam.Bot.Schema
     /// <summary>
     /// You will get this <see cref="Update"/> as soon as user presses button.
     /// </summary>
-    public class MessageCallbackUpdate
+    public class MessageCallbackUpdate : Update
     {
-        [JsonProperty(PropertyName = "update_type", Required = Required.Always)]
-        public string UpdateType { get; set; }
-
-        /// <summary>
-        /// Unix-time when event has occured.
-        /// </summary>
-        [JsonProperty(PropertyName = "timestamp", Required = Required.Always)]
-        [JsonConverter(typeof(UnixEpochWithMilisecondsConventer))]
-        public DateTime Timestamp { get; set; }
-
         [JsonProperty(PropertyName = "callback", Required = Required.Always)]
         public Callback Callback { get; set; }
 

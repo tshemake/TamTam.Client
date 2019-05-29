@@ -9,18 +9,8 @@ namespace TamTam.Bot.Schema
     /// <summary>
     /// You will receive this update when bot has been added to chat.
     /// </summary>
-    public class BotAddedToChatUpdate
+    public class BotAddedToChatUpdate : Update
     {
-        [JsonProperty(PropertyName = "update_type", Required = Required.Always)]
-        public string UpdateType { get; set; }
-
-        /// <summary>
-        /// Unix-time when event has occured.
-        /// </summary>
-        [JsonProperty(PropertyName = "timestamp", Required = Required.Always)]
-        [JsonConverter(typeof(UnixEpochWithMilisecondsConventer))]
-        public DateTime Timestamp { get; set; }
-
         /// <summary>
         /// Chat id where bot was added.
         /// </summary>

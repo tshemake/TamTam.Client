@@ -10,18 +10,8 @@ namespace TamTam.Bot.Schema
     /// You will receive this update when user has been removed
     /// from chat where bot is administrator.
     /// </summary>
-    public class UserRemovedFromChatUpdate
+    public class UserRemovedFromChatUpdate : Update
     {
-        [JsonProperty(PropertyName = "update_type", Required = Required.Always)]
-        public string UpdateType { get; set; }
-
-        /// <summary>
-        /// Unix-time when event has occured.
-        /// </summary>
-        [JsonProperty(PropertyName = "timestamp", Required = Required.Always)]
-        [JsonConverter(typeof(UnixEpochWithMilisecondsConventer))]
-        public DateTime Timestamp { get; set; }
-
         /// <summary>
         /// Chat identifier where event has occured.
         /// </summary>
