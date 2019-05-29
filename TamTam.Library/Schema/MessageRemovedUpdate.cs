@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 using TamTam.Bot.Converters;
@@ -15,6 +16,7 @@ namespace TamTam.Bot.Schema
         /// Identifier of removed message.
         /// </summary>
         [JsonProperty(PropertyName = "message_id", Required = Required.Always)]
-        public long MessageId { get; set; }
+        [Required(AllowEmptyStrings = true)]
+        public string MessageId { get; set; }
     }
 }

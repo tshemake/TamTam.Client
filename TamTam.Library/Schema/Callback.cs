@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 using TamTam.Bot.Converters;
@@ -22,6 +23,7 @@ namespace TamTam.Bot.Schema
         /// Current keyboard identifier.
         /// </summary>
         [JsonProperty(PropertyName = "callback_id", Required = Required.Always)]
+        [Required(AllowEmptyStrings = true)]
         public string CallbackId { get; set; }
 
         /// <summary>

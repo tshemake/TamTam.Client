@@ -14,7 +14,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// If true, sends location without asking user's confirmation.
         /// </summary>
-        [JsonProperty(PropertyName = "quick", Required = Required.DisallowNull)]
+        [JsonProperty(PropertyName = "quick", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public bool Quick { get; set; } = false;
     }
 }

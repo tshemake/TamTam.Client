@@ -9,11 +9,8 @@ namespace TamTam.Bot.Schema
     /// Request to attach file to message.
     /// Must be the only attachment in message.
     /// </summary>
-    public class FileAttachmentRequest
+    public class FileAttachmentRequest : AttachmentRequest
     {
-        [JsonProperty(PropertyName = "type", Required = Required.Always)]
-        public string Type { get; set; }
-
         /// <summary>
         /// This is information you will recieve as soon as a file is uploaded.
         /// </summary>

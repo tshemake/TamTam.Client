@@ -8,11 +8,8 @@ namespace TamTam.Bot.Schema
     /// <summary>
     /// Request to attach video to message.
     /// </summary>
-    public class VideoAttachmentRequest
+    public class VideoAttachmentRequest : AttachmentRequest
     {
-        [JsonProperty(PropertyName = "type", Required = Required.Always)]
-        public string Type { get; set; }
-
         /// <summary>
         /// This is information you will recieve as soon as audio/video is uploaded.
         /// </summary>

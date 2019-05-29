@@ -13,7 +13,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// List of messages.
         /// </summary>
-        [JsonProperty(PropertyName = "messages", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "messages", Required = Required.Always)]
         public IReadOnlyCollection<Message> Messages { get; set; }
     }
 }

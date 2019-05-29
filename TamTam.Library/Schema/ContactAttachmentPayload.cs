@@ -10,13 +10,13 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// User info in VCF format.
         /// </summary>
-        [JsonProperty(PropertyName = "vcfInfo", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "vcfInfo", Required = Required.Default)]
         public string VcfInfo { get; set; }
 
         /// <summary>
         /// User info.
         /// </summary>
-        [JsonProperty(PropertyName = "tamInfo", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "tamInfo", Required = Required.Default)]
         public User TamInfo { get; set; }
     }
 }

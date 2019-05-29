@@ -10,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.vsconfig = .vsconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TamTam.Library", "TamTam.Library\TamTam.Library.csproj", "{7C6D6C8B-A18B-40D1-879E-A97E510AA45D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TamTam.Library", "TamTam.Library\TamTam.Library.csproj", "{7C6D6C8B-A18B-40D1-879E-A97E510AA45D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TamTam.Client", "TamTam.Client\TamTam.Client.csproj", "{BE82D49C-BA21-424E-A994-98271D2A2031}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TamTam.Client", "TamTam.Client\TamTam.Client.csproj", "{BE82D49C-BA21-424E-A994-98271D2A2031}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

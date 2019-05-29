@@ -15,7 +15,7 @@ namespace TamTam.Bot.Schema
         /// User that sent this message.
         /// Can be null if message has been posted on behalf of a channel.
         /// </summary>
-        [JsonProperty(PropertyName = "sender", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "sender", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public Sender Sender { get; set; }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Forwarder or replied message.
         /// </summary>
-        [JsonProperty(PropertyName = "link", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "link", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public LinkedMessage Link { get; set; }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace TamTam.Bot.Schema
         /// Message staistics.
         /// Available only for channels in <see href="https://dev.tamtam.chat/#operation/getMessages">GET:/messages</see> context.
         /// </summary>
-        [JsonProperty(PropertyName = "stat", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "stat", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public MessageStat Stat { get; set; }
     }
 }

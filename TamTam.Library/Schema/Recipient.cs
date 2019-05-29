@@ -14,7 +14,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Chat identifier.
         /// </summary>
-        [JsonProperty(PropertyName = "chat_id", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "chat_id", Required = Required.Default)]
         public long? ChatId { get; set; }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// User identifier, if message was sent to user.
         /// </summary>
-        [JsonProperty(PropertyName = "user_id", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "user_id", Required = Required.Default)]
         public long? UserId { get; set; }
     }
 }

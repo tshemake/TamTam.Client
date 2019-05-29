@@ -6,14 +6,13 @@ using Newtonsoft.Json;
 
 namespace TamTam.Bot.Schema
 {
-    public class PhotoToken
+    public class StickerAttachmentPayload
     {
         /// <summary>
-        /// Encoded information of uploaded image.
+        /// Media attachment URL.
         /// </summary>
-        [JsonProperty(PropertyName = "token", Required = Required.Always)]
+        [JsonProperty(PropertyName = "url", Required = Required.Always)]
         [Required(AllowEmptyStrings = true)]
-
-        public string Token { get; set; }
+        public string Url { get; set; }
     }
 }

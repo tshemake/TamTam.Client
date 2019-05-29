@@ -11,14 +11,14 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Message text.
         /// </summary>
-        [JsonProperty(PropertyName = "text", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "text", Required = Required.Default)]
         [MaxLength(4000)]
         public string Text { get; set; }
 
         /// <summary>
         /// Single message attachment.
         /// </summary>
-        [JsonProperty(PropertyName = "attachment", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "attachment", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         [Obsolete("Use attachments property instead.")]
         public Attachment Attachment { get; set; }
 
@@ -26,19 +26,19 @@ namespace TamTam.Bot.Schema
         /// Message attachments.
         /// See <see cref="AttachmentRequest"/> and it's inheritors for full information.
         /// </summary>
-        [JsonProperty(PropertyName = "attachments", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "attachments", Required = Required.Default)]
         public IReadOnlyCollection<AttachmentRequest> Attachments { get; set; }
 
         /// <summary>
         /// Link to Message.
         /// </summary>
-        [JsonProperty(PropertyName = "link", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "link", Required = Required.Default)]
         public NewMessageLink Link { get; set; }
 
         /// <summary>
         /// If false, chat participants wouldn't be notified.
         /// </summary>
-        [JsonProperty(PropertyName = "notify", Required = Required.DisallowNull)]
+        [JsonProperty(PropertyName = "notify", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public bool Notify { get; set; } = true;
     }
 }

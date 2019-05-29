@@ -16,13 +16,14 @@ namespace TamTam.Bot.Schema
         /// Button payload.
         /// </summary>
         [JsonProperty(PropertyName = "payload", Required = Required.Always)]
+        [Required(AllowEmptyStrings = true)]
         [MaxLength(1024)]
         public string Payload { get; set; }
 
         /// <summary>
         /// Intent of button. Affects clients representation.
         /// </summary>
-        [JsonProperty(PropertyName = "intent", Required = Required.DisallowNull)]
+        [JsonProperty(PropertyName = "intent", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
         public Intent Intent { get; set; } = Intent.Default;
     }
 }

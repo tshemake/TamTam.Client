@@ -9,11 +9,8 @@ namespace TamTam.Bot.Schema
     /// Request to attach audio to message.
     /// Must be the only attachment in message.
     /// </summary>
-    public class AudioAttachmentRequest
+    public class AudioAttachmentRequest : AttachmentRequest
     {
-        [JsonProperty(PropertyName = "type", Required = Required.Always)]
-        public string Type { get; set; }
-
         /// <summary>
         /// This is information you will recieve as soon as audio/video is uploaded.
         /// </summary>

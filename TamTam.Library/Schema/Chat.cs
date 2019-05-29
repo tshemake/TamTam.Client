@@ -64,13 +64,13 @@ namespace TamTam.Bot.Schema
         /// Visible title of chat.
         /// Can be null for <see cref="ChatType.Dialog"/> chat type.
         /// </summary>
-        [JsonProperty(PropertyName = "title", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "title", Required = Required.Default)]
         public string Title { get; set; }
 
         /// <summary>
         /// Icon of chat.
         /// </summary>
-        [JsonProperty(PropertyName = "icon", Required = Required.Always)]
+        [JsonProperty(PropertyName = "icon", Required = Required.Default)]
         public ChatIcon Icon { get; set; }
 
         /// <summary>
@@ -90,15 +90,15 @@ namespace TamTam.Bot.Schema
         /// Identifier of chat owner.
         /// Visible only for chat admins.
         /// </summary>
-        [JsonProperty(PropertyName = "owner_id", NullValueHandling = NullValueHandling.Ignore)]
-        public long OwnerId { get; set; }
+        [JsonProperty(PropertyName = "owner_id", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+        public long? OwnerId { get; set; }
 
         /// <summary>
         /// Participants in chat with time of last activity.
         /// Can be null when you request list of chats. 
         /// Visible for chat admins only.
         /// </summary>
-        [JsonProperty(PropertyName = "participants", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "participants", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public IReadOnlyDictionary<string, long> Participants { get; set; }
 
         /// <summary>
@@ -111,13 +111,13 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Link on chat if it is public.
         /// </summary>
-        [JsonProperty(PropertyName = "link", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "link", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public string Link { get; set; }
 
         /// <summary>
         /// Chat description.
         /// </summary>
-        [JsonProperty(PropertyName = "description", Required = Required.Always)]
+        [JsonProperty(PropertyName = "description", Required = Required.Default)]
         public ChatDescription ChatDescription { get; set; }
     }
 }

@@ -9,11 +9,8 @@ namespace TamTam.Bot.Schema
     /// Request to attach contact card to message.
     /// Must be the only attachment in message.
     /// </summary>
-    public class ContactAttachmentRequest
+    public class ContactAttachmentRequest : AttachmentRequest
     {
-        [JsonProperty(PropertyName = "type", Required = Required.Always)]
-        public string Type { get; set; }
-
         [JsonProperty(PropertyName = "payload", Required = Required.Always)]
         public ContactAttachmentRequestPayload Payload { get; set; }
     }

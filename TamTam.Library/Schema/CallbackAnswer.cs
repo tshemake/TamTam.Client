@@ -11,18 +11,18 @@ namespace TamTam.Bot.Schema
     public class CallbackAnswer
     {
         [JsonProperty(PropertyName = "user_id", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
-        public long? UserId { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// Fill this if you want to modify current message.
         /// </summary>
-        [JsonProperty(PropertyName = "message", Required = Required.DisallowNull, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "message", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public NewMessageBody Message { get; set; }
 
         /// <summary>
         /// Fill this if you just want to send one-time notification to user.
         /// </summary>
-        [JsonProperty(PropertyName = "notification", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "notification", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         public string Notification { get; set; }
     }
 }

@@ -10,25 +10,25 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Contact name.
         /// </summary>
-        [JsonProperty(PropertyName = "name", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "name", Required = Required.Default)]
         public string Name { get; set; }
 
         /// <summary>
         /// Contact identifier.
         /// </summary>
-        [JsonProperty(PropertyName = "contactId", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "contactId", Required = Required.Default)]
         public long? ContactId { get; set; }
 
         /// <summary>
         /// Full information about contact in VCF format.
         /// </summary>
-        [JsonProperty(PropertyName = "vcfInfo", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "vcfInfo", Required = Required.Default)]
         public string VcfInfo { get; set; }
 
         /// <summary>
         /// Contact phone in VCF format.
         /// </summary>
-        [JsonProperty(PropertyName = "vcfPhone", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "vcfPhone", Required = Required.Default)]
         public string VcfPhone { get; set; }
     }
 }

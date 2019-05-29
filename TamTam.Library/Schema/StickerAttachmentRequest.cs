@@ -9,11 +9,8 @@ namespace TamTam.Bot.Schema
     /// Request to attach sticker.
     /// Must be the only attachment request in message.
     /// </summary>
-    public class StickerAttachmentRequest
+    public class StickerAttachmentRequest : AttachmentRequest
     {
-        [JsonProperty(PropertyName = "type", Required = Required.Always)]
-        public string Type { get; set; }
-
         [JsonProperty(PropertyName = "payload", Required = Required.Always)]
         public StickerAttachmentRequestPayload Payload { get; set; }
     }

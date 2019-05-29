@@ -11,6 +11,6 @@ namespace TamTam.Bot.Schema
     public class AttachmentRequest
     {
         [JsonProperty(PropertyName = "type", Required = Required.Always)]
-        public string Type { get; set; }
+        public AttachmentRequestType Type { get; set; }
     }
 }

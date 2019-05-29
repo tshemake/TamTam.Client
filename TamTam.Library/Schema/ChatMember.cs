@@ -23,7 +23,7 @@ namespace TamTam.Bot.Schema
         /// Unique public user name.
         /// Can be null if user is not accessible or it is not set.
         /// </summary>
-        [JsonProperty(PropertyName = "username", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "username", Required = Required.Default)]
         public string UserName { get; set; }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Permissions in chat if member is admin. null otherwise.
         /// </summary>
-        [JsonProperty(PropertyName = "permissions", Required = Required.AllowNull)]
-        public ChatAdminPermission Permissions { get; set; }
+        [JsonProperty(PropertyName = "permissions", Required = Required.Default)]
+        public IReadOnlyCollection<ChatAdminPermission> Permissions { get; set; }
     }
 }

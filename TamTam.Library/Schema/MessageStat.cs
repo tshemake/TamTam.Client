@@ -11,6 +11,6 @@ namespace TamTam.Bot.Schema
     public class MessageStat
     {
         [JsonProperty(PropertyName = "views", Required = Required.Always)]
-        public long Views { get; set; }
+        public int Views { get; set; }
     }
 }

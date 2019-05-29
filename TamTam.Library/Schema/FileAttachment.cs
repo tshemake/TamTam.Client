@@ -8,11 +8,8 @@ namespace TamTam.Bot.Schema
     /// <summary>
     /// Generic schema representing message attachment.
     /// </summary>
-    public class FileAttachment
+    public class FileAttachment : Attachment
     {
-        [JsonProperty(PropertyName = "type", Required = Required.Always)]
-        public string Type { get; set; }
-
         [JsonProperty(PropertyName = "payload", Required = Required.Always)]
         public FileAttachmentPayload Payload { get; set; }
     }

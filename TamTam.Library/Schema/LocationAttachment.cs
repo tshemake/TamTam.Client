@@ -8,11 +8,8 @@ namespace TamTam.Bot.Schema
     /// <summary>
     /// Generic schema representing message attachment.
     /// </summary>
-    public class LocationAttachment
+    public class LocationAttachment : Attachment
     {
-        [JsonProperty(PropertyName = "type", Required = Required.Always)]
-        public string Type { get; set; }
-
         [JsonProperty(PropertyName = "latitude", Required = Required.Always)]
         public double Latitude { get; set; }
 

@@ -15,6 +15,7 @@ namespace TamTam.Bot.Schema
         /// WebHook URL.
         /// </summary>
         [JsonProperty(PropertyName = "url", Required = Required.Always)]
+        [Required(AllowEmptyStrings = true)]
         public string Url { get; set; }
 
         /// <summary>
@@ -26,10 +27,10 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Update types bot subscribed for.
         /// </summary>
-        [JsonProperty(PropertyName = "update_types", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "update_types", Required = Required.Default)]
         public IReadOnlyCollection<UpdateType> UpdateTypes { get; set; }
 
-        [JsonProperty(PropertyName = "version", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "version", Required = Required.Default)]
         [RegularExpression("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")]
         public string Version { get; set; }
     }

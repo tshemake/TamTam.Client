@@ -15,6 +15,7 @@ namespace TamTam.Bot.Schema
         /// Button payload.
         /// </summary>
         [JsonProperty(PropertyName = "url", Required = Required.Always)]
+        [Required(AllowEmptyStrings = true)]
         [MaxLength(256)]
         public string Url { get; set; }
     }

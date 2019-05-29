@@ -19,7 +19,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Pointer to the next data page.
         /// </summary>
-        [JsonProperty(PropertyName = "marker", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "marker", Required = Required.Default)]
         public long? Marker { get; set; }
     }
 }

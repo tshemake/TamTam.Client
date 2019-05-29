@@ -14,7 +14,7 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Newly created message.
         /// </summary>
-        [JsonProperty(PropertyName = "message", Required = Required.AllowNull)]
+        [JsonProperty(PropertyName = "message", Required = Required.Always)]
         public Message Message { get; set; }
     }
 }
