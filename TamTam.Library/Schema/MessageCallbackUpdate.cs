@@ -18,7 +18,7 @@ namespace TamTam.Bot.Schema
         /// Original message containing inline keyboard.
         /// Can be null in case it had been deleted by the moment a bot got this update.
         /// </summary>
-        [JsonProperty(PropertyName = "message", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "message", Required = Required.Default)]
         public Message Message { get; set; }
     }
 }

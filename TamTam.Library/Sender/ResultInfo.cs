@@ -8,15 +8,11 @@ namespace TamTam.Bot.Sender
     public class ResultInfo
     {
         public HttpStatus HttpStatus { get; }
-        public string Code { get; }
-        public string Message { get; set; }
         public Exception Exception { get; }
 
         public ResultInfo()
         {
             HttpStatus = default;
-            Code = default;
-            Message = default;
             Exception = default;
         }
 
@@ -29,18 +25,6 @@ namespace TamTam.Bot.Sender
             : this(httpStatus)
         {
             Exception = exception;
-        }
-
-        public ResultInfo(HttpStatus httpStatus, string code)
-            : this(httpStatus)
-        {
-            Code = code;
-        }
-
-        public ResultInfo(HttpStatus httpStatus, string code, string message)
-            : this(httpStatus, code)
-        {
-            Message = message;
         }
     }
 }

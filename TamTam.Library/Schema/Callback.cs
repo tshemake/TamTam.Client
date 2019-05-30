@@ -30,6 +30,7 @@ namespace TamTam.Bot.Schema
         /// Button payload.
         /// </summary>
         [JsonProperty(PropertyName = "payload", Required = Required.Always)]
+        [Required(AllowEmptyStrings = true)]
         public string Payload { get; set; }
 
         /// <summary>

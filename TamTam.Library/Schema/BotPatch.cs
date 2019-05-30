@@ -37,6 +37,7 @@ namespace TamTam.Bot.Schema
         /// Pass empty list if you want to remove commands.
         /// </summary>
         [JsonProperty(PropertyName = "commands", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+        [MaxLength(32)]
         public IReadOnlyCollection<BotCommand> Commands { get; set; }
 
         /// <summary>

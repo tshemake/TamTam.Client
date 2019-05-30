@@ -43,6 +43,7 @@ namespace TamTam.Bot.Schema
         /// Commands supported by bot.
         /// </summary>
         [JsonProperty(PropertyName = "commands", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+        [MaxLength(32)]
         public IReadOnlyCollection<BotCommand> Commands { get; set; }
 
         /// <summary>

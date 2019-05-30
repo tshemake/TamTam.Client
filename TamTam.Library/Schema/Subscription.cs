@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
+using TamTam.Bot.Converters;
 
 namespace TamTam.Bot.Schema
 {
@@ -22,7 +23,8 @@ namespace TamTam.Bot.Schema
         /// Unix-time when subscription was created.
         /// </summary>
         [JsonProperty(PropertyName = "time", Required = Required.Always)]
-        public long Time { get; set; }
+        [JsonConverter(typeof(UnixEpochWithMilisecondsConventer))]
+        public DateTime Time { get; set; }
 
         /// <summary>
         /// Update types bot subscribed for.

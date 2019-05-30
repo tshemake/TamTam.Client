@@ -27,14 +27,14 @@ namespace TamTam.Bot.Schema
         /// <summary>
         /// Message text.
         /// </summary>
-        [JsonProperty(PropertyName = "text", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "text", Required = Required.Default)]
         public string Text { get; set; }
 
         /// <summary>
         /// Message attachments.
         /// Could be one of <see cref="Attachment"/> type.
         /// </summary>
-        [JsonProperty(PropertyName = "attachments", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "attachments", Required = Required.Default)]
         public IReadOnlyCollection<Attachment> Attachments { get; set; }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 using TamTam.Bot.Converters;
@@ -27,6 +28,7 @@ namespace TamTam.Bot.Schema
         /// New title.
         /// </summary>
         [JsonProperty(PropertyName = "title", Required = Required.Always)]
-        public long Title { get; set; }
+        [Required(AllowEmptyStrings = true)]
+        public string Title { get; set; }
     }
 }

@@ -144,7 +144,7 @@ namespace TamTam.Bot.Sender
                 {
                     return await OnResponse<T>(httpResponse);
                 }
-                return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode), $"Service sent unknown content-type from url {request.RequestUri}."));
+                return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode), new ApiRequestException($"Service sent unknown content-type from url {request.RequestUri}.", (int)httpResponse.StatusCode)));
             }
         }
 
@@ -165,10 +165,9 @@ namespace TamTam.Bot.Sender
         private static async Task<ApiResponse<T>> OnResponse<T>(HttpResponseMessage httpResponse)
         {
             string responseContent = default;
-            HttpStatusCode actualResponseStatusCode = default;
             try
             {
-                actualResponseStatusCode = httpResponse.StatusCode;
+                var actualResponseStatusCode = httpResponse.StatusCode;
                 responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 switch (actualResponseStatusCode)
                 {
@@ -184,8 +183,8 @@ namespace TamTam.Bot.Sender
                     case HttpStatusCode.TooManyRequests when !string.IsNullOrWhiteSpace(responseContent):
                     case HttpStatusCode.ServiceUnavailable when !string.IsNullOrWhiteSpace(responseContent):
                         {
-                            var value = DeserializeObject<Error>(responseContent);
-                            return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent), value.Code, value.Message));
+                            var error = DeserializeObject<Error>(responseContent);
+                            return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent), new TamTamBotException(error)));
                         }
                     default:
                         {
