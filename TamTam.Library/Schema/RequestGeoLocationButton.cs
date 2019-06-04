@@ -11,6 +11,9 @@ namespace TamTam.Bot.Schema
     /// </summary>
     public class RequestGeoLocationButton : Button
     {
+        [JsonProperty(PropertyName = "type", Required = Required.Always)]
+        public override ButtonType Type => ButtonType.RequestGeoLocation;
+
         /// <summary>
         /// If true, sends location without asking user's confirmation.
         /// </summary>

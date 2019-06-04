@@ -20,14 +20,14 @@ namespace TamTam.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "attachment", Required = Required.Default, NullValueHandling = NullValueHandling.Ignore)]
         [Obsolete("Use attachments property instead. Will be removed in the next major release.")]
-        public NewMessageBodyAttachmentRequest Attachment { get; set; }
+        public AttachmentRequest Attachment { get; set; }
 
         /// <summary>
         /// Message attachments.
         /// See <see cref="AttachmentRequest"/> and it's inheritors for full information.
         /// </summary>
         [JsonProperty(PropertyName = "attachments", Required = Required.Default)]
-        public IReadOnlyCollection<NewMessageBodyAttachmentRequest> Attachments { get; set; }
+        public IReadOnlyCollection<AttachmentRequest> Attachments { get; set; }
 
         /// <summary>
         /// Link to Message.

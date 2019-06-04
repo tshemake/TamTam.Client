@@ -10,6 +10,9 @@ namespace TamTam.Bot.Schema
     /// </summary>
     public class PhotoAttachmentRequest : AttachmentRequest
     {
+        [JsonProperty(PropertyName = "type", Required = Required.Always)]
+        public override AttachmentRequestType Type => AttachmentRequestType.Image;
+
         /// <summary>
         /// Request to attach image.
         /// All fields are mutually exclusive.

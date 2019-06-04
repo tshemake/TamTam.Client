@@ -10,6 +10,9 @@ namespace TamTam.Bot.Schema
     /// </summary>
     public class LocationAttachmentRequest : AttachmentRequest
     {
+        [JsonProperty(PropertyName = "type", Required = Required.Always)]
+        public override AttachmentRequestType Type => AttachmentRequestType.Location;
+
         [JsonProperty("latitude", Required = Required.Always)]
         public double Latitude { get; set; }
 

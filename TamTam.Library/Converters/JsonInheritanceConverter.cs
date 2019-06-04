@@ -20,9 +20,6 @@ namespace TamTam.Bot.Converters
         [ThreadStatic]
         private static bool _isReading;
 
-        [ThreadStatic]
-        private static bool _isWriting;
-
         public JsonInheritanceConverter()
             : this(DefaultDiscriminatorName)
         {
@@ -33,18 +30,7 @@ namespace TamTam.Bot.Converters
             _propertyName = discriminator;
         }
 
-        public override bool CanWrite
-        {
-            get
-            {
-                if (!_isWriting)
-                {
-                    return true;
-                }
-
-                return _isWriting = false;
-            }
-        }
+        public override bool CanWrite => false;
 
         public override bool CanRead
         {

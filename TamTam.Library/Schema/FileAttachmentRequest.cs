@@ -11,6 +11,9 @@ namespace TamTam.Bot.Schema
     /// </summary>
     public class FileAttachmentRequest : AttachmentRequest
     {
+        [JsonProperty(PropertyName = "type", Required = Required.Always)]
+        public override AttachmentRequestType Type => AttachmentRequestType.File;
+
         /// <summary>
         /// This is information you will recieve as soon as a file is uploaded.
         /// </summary>

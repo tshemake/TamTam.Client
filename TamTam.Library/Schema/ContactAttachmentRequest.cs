@@ -11,6 +11,9 @@ namespace TamTam.Bot.Schema
     /// </summary>
     public class ContactAttachmentRequest : AttachmentRequest
     {
+        [JsonProperty(PropertyName = "type", Required = Required.Always)]
+        public override AttachmentRequestType Type => AttachmentRequestType.Contact;
+
         [JsonProperty(PropertyName = "payload", Required = Required.Always)]
         public ContactAttachmentRequestPayload Payload { get; set; }
     }

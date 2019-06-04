@@ -10,6 +10,9 @@ namespace TamTam.Bot.Schema
     /// </summary>
     public class InlineKeyboardAttachmentRequest : AttachmentRequest
     {
+        [JsonProperty(PropertyName = "type", Required = Required.Always)]
+        public override AttachmentRequestType Type => AttachmentRequestType.InlineKeyboard;
+
         [JsonProperty(PropertyName = "payload", Required = Required.Always)]
         public InlineKeyboardAttachmentRequestPayload Payload { get; set; }
     }

@@ -11,7 +11,7 @@ namespace TamTam.Bot.Schema
     public class Button
     {
         [JsonProperty(PropertyName = "type", Required = Required.Always)]
-        public ButtonType Type { get; set; }
+        public virtual ButtonType Type { get; set; }
 
         /// <summary>
         /// Visible text of button.

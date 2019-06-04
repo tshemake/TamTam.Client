@@ -11,6 +11,9 @@ namespace TamTam.Bot.Schema
     /// </summary>
     public class LinkButton : Button
     {
+        [JsonProperty(PropertyName = "type", Required = Required.Always)]
+        public override ButtonType Type => ButtonType.Link;
+
         /// <summary>
         /// Button payload.
         /// </summary>

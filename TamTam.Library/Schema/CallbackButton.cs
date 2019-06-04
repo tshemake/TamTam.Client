@@ -12,6 +12,9 @@ namespace TamTam.Bot.Schema
     /// </summary>
     public class CallbackButton : Button
     {
+        [JsonProperty(PropertyName = "type", Required = Required.Always)]
+        public override ButtonType Type => ButtonType.Callback;
+
         /// <summary>
         /// Button payload.
         /// </summary>
