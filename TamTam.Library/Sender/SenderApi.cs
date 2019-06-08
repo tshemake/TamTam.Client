@@ -142,9 +142,12 @@ namespace TamTam.Bot.Sender
             {
                 if (IsJsonContentType(httpResponse))
                 {
+                    return await OnJsonResponse<T>(httpResponse);
+                }
+                else
+                {
                     return await OnResponse<T>(httpResponse);
                 }
-                return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode), new ApiRequestException($"Service sent unknown content-type from url {request.RequestUri}.", (int)httpResponse.StatusCode)));
             }
         }
 
@@ -152,7 +155,7 @@ namespace TamTam.Bot.Sender
         {
             try
             {
-                return await instance.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                return await instance.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
             }
             catch (TaskCanceledException ex)
             {
@@ -173,7 +176,7 @@ namespace TamTam.Bot.Sender
                 {
                     case HttpStatusCode.OK when !string.IsNullOrWhiteSpace(responseContent):
                         {
-                            var value = DeserializeObject<T>(responseContent);
+                            var value = TryDeserializeObject<T>(responseContent);
                             return new ApiResponse<T>(true, value, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent)));
                         }
                     case HttpStatusCode.BadRequest when !string.IsNullOrWhiteSpace(responseContent):
@@ -183,12 +186,17 @@ namespace TamTam.Bot.Sender
                     case HttpStatusCode.TooManyRequests when !string.IsNullOrWhiteSpace(responseContent):
                     case HttpStatusCode.ServiceUnavailable when !string.IsNullOrWhiteSpace(responseContent):
                         {
-                            var error = DeserializeObject<Error>(responseContent);
+                            var error = TryDeserializeObject<Error>(responseContent);
                             return new ApiResponse<T>(false, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent), new TamTamBotException(error)));
                         }
                     default:
                         {
                             httpResponse.EnsureSuccessStatusCode();
+                            if (!string.IsNullOrWhiteSpace(responseContent))
+                            {
+                                var value = TryDeserializeObject<T>(responseContent);
+                                return new ApiResponse<T>(true, value, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent)));
+                            }
                             return new ApiResponse<T>(true, default, new ResultInfo(new HttpStatus((int)httpResponse.StatusCode, responseContent)));
                         }
                 }
@@ -208,13 +216,18 @@ namespace TamTam.Bot.Sender
             }
         }
 
+        private static async Task<ApiResponse<T>> OnJsonResponse<T>(HttpResponseMessage httpResponse)
+        {
+            return await OnResponse<T>(httpResponse);
+        }
+
         private static async Task<TResult> ReadContentAsJsonAsync<TResult>(HttpResponseMessage message)
         {
             var content = await message.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return DeserializeObject<TResult>(content);
+            return TryDeserializeObject<TResult>(content);
         }
 
-        private static TResult DeserializeObject<TResult>(string json)
+        private static TResult TryDeserializeObject<TResult>(string json)
         {
             try
             {
@@ -228,7 +241,7 @@ namespace TamTam.Bot.Sender
 
         private static bool IsJsonContentType(HttpResponseMessage httpResponse)
         {
-            return httpResponse.Content.Headers.ContentType.MediaType == ContentTypes.ApplicationJson;
+            return httpResponse.Content.Headers?.ContentType?.MediaType == ContentTypes.ApplicationJson;
         }
     }
 }
